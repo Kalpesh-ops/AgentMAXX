@@ -2,9 +2,9 @@
 ### Autonomous Web3 Financial Executive & x402 Micropayment Engine
 > **Built for the Rise In Agentmaxxing Hackathon — Week 1: "Get Agentic"**
 
-[![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel)](https://agentmaxx.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel)](https://agent-maxx.vercel.app)
 [![Network](https://img.shields.io/badge/Network-Base%20Sepolia-blue?style=for-the-badge&logo=coinbase)](https://sepolia.basescan.org)
-[![LLM](https://img.shields.io/badge/Model-Google%20Gemini%202.5%20Flash-orange?style=for-the-badge&logo=google)](https://aistudio.google.com)
+[![LLM](https://img.shields.io/badge/Model-Google%20Gemini%203.8%20Flash-orange?style=for-the-badge&logo=google)](https://aistudio.google.com)
 [![Protocol](https://img.shields.io/badge/Protocol-x402%20Micropayments-green?style=for-the-badge)](https://github.com/Kalpesh-ops/AgentMAXX)
 
 ---
@@ -57,7 +57,7 @@ Each paid tool requires an autonomous cryptographic handshake. The agent's walle
 [ User Prompt ]
       │
       ▼
-[ AgentMAXX Cognitive Engine (Gemini 2.5 Flash) ]
+[ AgentMAXX Cognitive Engine (Gemini 3.8 Flash) ]
       │
       ├── Needs Premium Data?
       │
@@ -87,7 +87,7 @@ Each paid tool requires an autonomous cryptographic handshake. The agent's walle
 ## 💻 Tech Stack & Architecture
 
 - **Core Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
-- **LLM Engine**: [Google Gemini 2.5 Flash](https://aistudio.google.com) via `@google/genai`
+- **LLM Engine**: [Google Gemini 3.8 Flash](https://aistudio.google.com) via `@google/genai`
 - **Web3 & Signer**: [viem](https://viem.sh/) (Base Sepolia Chain ID 84532, EIP-191 personal sign, RPC client)
 - **Styling**: Tailwind CSS + Cyberpunk / Institutional Dark Terminal design system
 - **Deployment**: [Vercel](https://vercel.com/) (Serverless-optimized with multi-tier `/tmp` wallet persistence)

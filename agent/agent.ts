@@ -10,7 +10,7 @@
 import { GoogleGenAI, type Content, type Part } from "@google/genai";
 import { tools } from "./tools";
 
-export const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+export const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 const MAX_STEPS = 6;
 
 const SYSTEM_PROMPT =

@@ -257,7 +257,7 @@ export default function Home() {
           <div className="flex flex-col gap-1 border-l-2 border-primary pl-4 font-mono text-xs text-muted-foreground">
             <div>PROTOCOL: <span className="text-foreground">x402 Micropayments</span></div>
             <div>CHAIN: <span className="text-foreground">Base Sepolia (84532)</span></div>
-            <div>RUNTIME: <span className="text-foreground">Google Gemini 2.5 Flash</span></div>
+            <div>RUNTIME: <span className="text-foreground">Google Gemini 3.8 Flash</span></div>
           </div>
         </div>
       </header>
@@ -272,7 +272,7 @@ export default function Home() {
               <SectionTitle num="01" title="Agent Treasury & Environment" />
             </CardHeader>
             <CardContent className="flex flex-col pt-4">
-              <SetupStep number={1} title="Gemini 2.5 Flash LLM" done={ready}>
+              <SetupStep number={1} title="Gemini 3.8 Flash LLM" done={ready}>
                 {status && !ready && (
                   <p className="text-muted-foreground text-xs">
                     Set <Code>GEMINI_API_KEY</Code> in <Code>.env</Code> or environment variables.
@@ -549,7 +549,7 @@ export default function Home() {
                 <span className="font-bold text-foreground block font-mono mb-1">3. REPOSITORY & REQUISITES</span>
                 <p>GitHub: <a href="https://github.com/Kalpesh-ops/AgentMAXX" target="_blank" rel="noreferrer" className="text-primary underline">https://github.com/Kalpesh-ops/AgentMAXX</a></p>
                 <p>Base Sepolia Network: Chain ID 84532</p>
-                <p>Gemini Model: Gemini 2.5 Flash</p>
+                <p>Gemini Model: Gemini 3.8 Flash</p>
               </div>
             </div>
 
