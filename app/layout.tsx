@@ -7,23 +7,25 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space
 const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
 export const metadata: Metadata = {
-  title: "AgentMAXX | Autonomous Web3 AI Agent & x402 Micropayment Engine",
+  title: "AgentMAXX | Autonomous Web3 Agent & Workflow Engine (Week 2: Build & Ship)",
   description:
-    "Autonomous on-chain Web3 AI agent built for Agentmaxxing Week 1. Powered by Google Gemini and viem on Base Sepolia. Capable of autonomous HTTP 402 machine-to-machine micropayments, quantitative market alpha, contract audits, and tool calling.",
+    "Autonomous on-chain Web3 AI agent and workflow orchestration engine built for Agentmaxxing Week 2. Powered by Google Gemini 3.8 Flash and viem on Base Sepolia. Capable of multi-stage autonomous pipelines, live DexScreener DEX queries, Base RPC telemetry, and HTTP 402 EIP-191 machine-to-machine settlements.",
   keywords: [
     "AI Agent",
     "Agentmaxxing",
+    "Agent Workflows",
     "x402",
     "Base Sepolia",
-    "Google Gemini",
+    "DexScreener",
+    "Google Gemini 3.8 Flash",
     "Web3 AI",
     "Micropayments",
     "Rise In",
   ],
   authors: [{ name: "Kalpesh Parashar" }],
   openGraph: {
-    title: "AgentMAXX | Autonomous Web3 AI Agent",
-    description: "Self-paying AI Agent with its own crypto wallet on Base Sepolia using x402 micropayments.",
+    title: "AgentMAXX | Autonomous Web3 Agent & Workflow Engine",
+    description: "Self-paying AI Agent with chained multi-stage workflows, live DEX metrics, and x402 settlements on Base Sepolia.",
     type: "website",
   },
 };

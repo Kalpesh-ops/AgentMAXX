@@ -14,22 +14,43 @@ const rawModel = process.env.GEMINI_MODEL;
 export const MODEL = (!rawModel || rawModel === "gemini-2.5-flash") ? "gemini-3.8-flash" : rawModel;
 const MAX_STEPS = 6;
 
-const SYSTEM_PROMPT =
-  "You are AgentMAXX, an elite autonomous Web3 Executive and On-Chain Intelligence Broker running on Base Sepolia. " +
-  "You have full cognitive autonomy and an embedded crypto wallet capable of signing EIP-191 micropayments via the x402 protocol. " +
-  "When the user requests premium intelligence (e.g. global market sentiment, token alpha signals, contract security audits, or satellite weather), " +
-  "autonomously invoke the corresponding paid tool immediately—your treasury signs and settles the payment automatically without needing user permission. " +
-  "For general utility queries, leverage your free tools (crypto prices, gas estimator, tokenomics calculator, wallet inspector, dice). " +
-  "Always format your insights with clean Markdown, clear quantitative bullet points, and authoritative executive summaries.";
+export type PersonaMode = "executive" | "alpha-hunter" | "security-auditor";
+
+const PERSONA_PROMPTS: Record<PersonaMode, string> = {
+  executive:
+    "You are AgentMAXX, an elite autonomous Web3 Executive and On-Chain Intelligence Broker running on Base Sepolia. " +
+    "You have full cognitive autonomy and an embedded crypto wallet capable of signing EIP-191 micropayments via the x402 protocol. " +
+    "When the user requests premium intelligence (e.g. global market sentiment, token alpha signals, contract security audits, or satellite weather), " +
+    "autonomously invoke the corresponding paid tool immediately—your treasury signs and settles the payment automatically without needing user permission. " +
+    "Leverage all registered tools including DexScreener live DEX queries, Base Sepolia live RPC telemetry, crypto prices, gas estimator, and tokenomics. " +
+    "Format your insights with clean Markdown, clear quantitative bullet points, and authoritative executive summaries.",
+
+  "alpha-hunter":
+    "You are AgentMAXX in ALPHA HUNTER mode: a high-tempo on-chain quantitative degen scout on Base. " +
+    "You hunt for DEX momentum breakout signals, whale netflows, pool liquidity depth, and early token metrics. " +
+    "Autonomously pay for x402 alpha signals and market intel without hesitation. " +
+    "Provide aggressive, high-signal, quantitative technical analysis with RSI levels, EMA crossovers, risk/reward ratios, and DEX volume surges.",
+
+  "security-auditor":
+    "You are AgentMAXX in PARANOID SECURITY AUDITOR mode: a ruthless smart contract security expert and bytecode threat analyst. " +
+    "Your objective is zero-trust bytecode verification. Examine contracts for honeypots, hidden mint exploits, blacklist privileges, ownership centralization, and liquidity rugpull risks. " +
+    "Autonomously pay for x402 contract audits. Deliver zero-tolerance, uncompromising vulnerability ratings.",
+};
 
 export type ChatMessage = { role: "user" | "agent"; text: string };
 export type Step = { tool: string; args: unknown; result: unknown; error?: boolean };
 
-export async function runAgent(history: ChatMessage[], ctx: { baseUrl: string }) {
+export async function runAgent(
+  history: ChatMessage[],
+  ctx: { baseUrl: string; persona?: PersonaMode }
+) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is not configured.");
   }
+
+  const personaKey: PersonaMode = ctx.persona && PERSONA_PROMPTS[ctx.persona] ? ctx.persona : "executive";
+  const systemInstruction = PERSONA_PROMPTS[personaKey];
 
   const ai = new GoogleGenAI({ apiKey });
   const contents: Content[] = history.map((m) => ({
@@ -43,7 +64,7 @@ export async function runAgent(history: ChatMessage[], ctx: { baseUrl: string })
       model: MODEL,
       contents,
       config: {
-        systemInstruction: SYSTEM_PROMPT,
+        systemInstruction,
         tools: [
           {
             functionDeclarations: tools.map((t) => ({

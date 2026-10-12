@@ -1,4 +1,4 @@
-import { MODEL, runAgent } from "@/agent/agent";
+import { MODEL, runAgent, type PersonaMode } from "@/agent/agent";
 import { tools } from "@/agent/tools";
 
 // GET /api/agent -> setup status + enriched list of tools
@@ -15,7 +15,7 @@ export async function GET() {
   });
 }
 
-// POST /api/agent { messages } -> the agent's answer + execution step trace
+// POST /api/agent { messages, persona } -> the agent's answer + execution step trace
 export async function POST(req: Request) {
   if (!process.env.GEMINI_API_KEY) {
     return Response.json(
@@ -25,8 +25,11 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { messages } = await req.json();
-    const result = await runAgent(messages, { baseUrl: new URL(req.url).origin });
+    const { messages, persona } = await req.json();
+    const result = await runAgent(messages, {
+      baseUrl: new URL(req.url).origin,
+      persona: persona as PersonaMode,
+    });
     return Response.json(result);
   } catch (err) {
     return Response.json(
