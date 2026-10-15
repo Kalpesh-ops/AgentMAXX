@@ -97,7 +97,10 @@ export function loadAccount() {
     // Ignore read errors
   }
 
-  return null;
+  // 4. Default persistent agent key for serverless instances (Base Sepolia)
+  const DEFAULT_AGENT_KEY: Hex = "0x2c6378f3922544366231a812f13a409b0223d1a3424c5ad9b9cdc7726d71e43b";
+  inMemoryKey = DEFAULT_AGENT_KEY;
+  return privateKeyToAccount(inMemoryKey);
 }
 
 export function requireAccount() {
