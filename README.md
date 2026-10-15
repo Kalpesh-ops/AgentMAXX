@@ -8,6 +8,10 @@
 [![LLM](https://img.shields.io/badge/Model-Google%20Gemini%203.8%20Flash-orange?style=for-the-badge&logo=google)](https://aistudio.google.com)
 [![Crypto Engine](https://img.shields.io/badge/Crypto%20Engine-viem%20v2%20+%20BaseScan-purple?style=for-the-badge)](https://sepolia.basescan.org)
 [![Protocol](https://img.shields.io/badge/Payments-x402%20EIP--191%20Settlements-green?style=for-the-badge)](https://agent-maxx.vercel.app)
+[![Launch Video](https://img.shields.io/badge/Video-Launch%20Demo%20(brag.mp4)-red?style=for-the-badge&logo=youtube)](https://agent-maxx.vercel.app/brag.mp4)
+
+> 🎬 **20-Second Launch Video**: [Watch `brag.mp4`](https://agent-maxx.vercel.app/brag.mp4) | [Poster](https://agent-maxx.vercel.app/brag.jpg)  
+> *(Produced with [`latent-spaces/brag`](https://github.com/latent-spaces/brag) + Hyperframes & GSAP)*
 
 ---
 

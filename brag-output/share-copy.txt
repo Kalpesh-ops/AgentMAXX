@@ -1,0 +1,5 @@
+What happens when your AI agent gets a real crypto wallet?
+
+AgentMAXX now operates its own on-chain treasury on Base Sepolia — executing live ETH transfers, inspecting smart contract bytecode, and writing immutable Proof-of-Audit calldata directly to the blockchain.
+
+Try it live: https://agent-maxx.vercel.app | Code: https://github.com/Kalpesh-ops/AgentMAXX

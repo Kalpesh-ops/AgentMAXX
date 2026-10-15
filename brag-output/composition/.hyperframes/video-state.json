@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "historyId": "3a4f57d0-df10-4d1b-9538-8f55981eed72",
+  "currentRevision": "9008990c-d5ac-4b2c-9572-347de3b7f73f",
+  "pendingChanges": false,
+  "files": {
+    "AGENTS.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "CLAUDE.md": {
+      "hash": "1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\1d\\1d4f0c8ca2507b94fd7c9df709fff01416adbd51a0f922b9d6ed2f40129147d5"
+    },
+    "assets/images/crypto_hub.png": {
+      "hash": "bb6c95aaa18c2736104e1acfd93d4c77225a782a4d758d9a7af0b5068675bb1e",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\bb\\bb6c95aaa18c2736104e1acfd93d4c77225a782a4d758d9a7af0b5068675bb1e"
+    },
+    "assets/sfx/interface/click_001.ogg": {
+      "hash": "ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\cc\\ccfb7fa0cccdd9faec0eb16033c732b1e308d139d80f799161495d58f7adcdb9"
+    },
+    "assets/sfx/interface/drop_001.ogg": {
+      "hash": "692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\69\\692ee3a6f1821402ca649ff735bee9591dc4846c8098fc7d6a90fd15fa57c1af"
+    },
+    "assets/sfx/interface/select_008.ogg": {
+      "hash": "f703b6b1c62dae1c246a46d5c2442802588f68be2df4d17e0d65cf7e0dbfc826",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\f7\\f703b6b1c62dae1c246a46d5c2442802588f68be2df4d17e0d65cf7e0dbfc826"
+    },
+    "assets/sfx/interface/switch_001.ogg": {
+      "hash": "3b74efad87f1e69dbd1d05c5ad952ab90859b5a3d11da6ec5bd79b4f03b42afa",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\3b\\3b74efad87f1e69dbd1d05c5ad952ab90859b5a3d11da6ec5bd79b4f03b42afa"
+    },
+    "hyperframes.json": {
+      "hash": "53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\53\\53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
+    },
+    "index.html": {
+      "hash": "46b6e8452474e64274bec7a7889419455ba8f21185b6229517ef138b349f956a",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\46\\46b6e8452474e64274bec7a7889419455ba8f21185b6229517ef138b349f956a"
+    },
+    "meta.json": {
+      "hash": "b66bc8c33291b49d6fc454048a71722c141bf87b3260cb9539f840e801afea5a",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\b6\\b66bc8c33291b49d6fc454048a71722c141bf87b3260cb9539f840e801afea5a"
+    },
+    "package.json": {
+      "hash": "2c2d564c1f096d2da4aef20da6fdeaa136f4504d59805fc512eb955a988fedec",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\2c\\2c2d564c1f096d2da4aef20da6fdeaa136f4504d59805fc512eb955a988fedec"
+    },
+    "assets/music/happy-beats-business-moves-vol-10-by-ende-dot-app.mp3": {
+      "hash": "f9912f2c962ada1e579f5ccc5a7d854d67e5e81ee96a7dd8c885a8480ae58d09",
+      "content": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\f9\\f9912f2c962ada1e579f5ccc5a7d854d67e5e81ee96a7dd8c885a8480ae58d09"
+    }
+  },
+  "revisions": {
+    "9008990c-d5ac-4b2c-9572-347de3b7f73f": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1792092924526,
+      "endedAt": 1792092924527,
+      "files": {
+        "index.html": {
+          "before": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\7d\\7d0daa71c206a6136b695ce9c8256c35bdee4e845197026babe1f6fc4a10f00e",
+          "after": "C:\\Users\\KALPESH PARASHAR\\.cache\\hyperframes\\history\\3a4f57d0-df10-4d1b-9538-8f55981eed72\\blobs\\46\\46b6e8452474e64274bec7a7889419455ba8f21185b6229517ef138b349f956a"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": "9008990c-d5ac-4b2c-9572-347de3b7f73f",
+      "id": "9f46d622-abd4-46ee-932f-14a4b291e8cf"
+    },
+    "revisions": {
+      "9008990c-d5ac-4b2c-9572-347de3b7f73f": [
+        {
+          "id": "9f46d622-abd4-46ee-932f-14a4b291e8cf",
+          "scope": "project",
+          "report": "E:\\hackathons\\agentmaxx\\brag-output\\composition\\.hyperframes\\artifacts\\checks\\9f46d622-abd4-46ee-932f-14a4b291e8cf.json",
+          "metadata": {
+            "ok": true,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 3000,
+              "contrast": true,
+              "strict": false,
+              "snapshots": false,
+              "browserGpuMode": "auto"
+            }
+          },
+          "createdAt": 1792092934662,
+          "contentHash": "b22745444dbc10a3e5f93aa560a2c78939a2089585fcdb42cff0bec1194f4e59",
+          "revision": "9008990c-d5ac-4b2c-9572-347de3b7f73f",
+          "inputFingerprint": "4a5b082f977d3f9f21f6f286fde2d00aa7476fec845747abd52611316f576cb1",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "936a0847-6036-456f-bf2a-57010151e748",
+        "scope": "project",
+        "report": "E:\\hackathons\\agentmaxx\\brag-output\\composition\\.hyperframes\\artifacts\\checks\\936a0847-6036-456f-bf2a-57010151e748.json",
+        "metadata": {
+          "ok": false,
+          "browserSkipped": false,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 3000,
+            "contrast": true,
+            "strict": false,
+            "snapshots": false,
+            "browserGpuMode": "auto"
+          }
+        },
+        "createdAt": 1792092856487,
+        "contentHash": "384d8cf0dfe72687faeaabecbc8bd3f5a31d28bf91674b98da23c60dffa800fb",
+        "revision": null,
+        "inputFingerprint": "0fe6ae6a1fc30700ddf0d25e2060a53cd199cf7a1ad1b50de9a1e37b05304e54",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "ce6ddeab-ed8f-44a6-9309-44a5444bf009",
+      "completedAt": 1792093112373,
+      "output": "E:\\hackathons\\agentmaxx\\brag-output\\brag.mp4",
+      "status": "completed",
+      "revision": "9008990c-d5ac-4b2c-9572-347de3b7f73f"
+    },
+    "retainedRevisions": [
+      "9008990c-d5ac-4b2c-9572-347de3b7f73f"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}
