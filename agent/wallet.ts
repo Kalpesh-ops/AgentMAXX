@@ -141,18 +141,17 @@ export function createWallet(): Address {
   return privateKeyToAccount(privateKey).address;
 }
 
-export function getWalletAddress(): Address | null {
-  return loadAccount()?.address ?? null;
+export function getWalletAddress(): Address {
+  return requireAccount().address;
 }
 
-export function getPrivateKey(): string | null {
-  loadAccount();
-  return inMemoryKey ?? null;
+export function getPrivateKey(): string {
+  requireAccount();
+  return inMemoryKey!;
 }
 
 export async function getWalletBalance(): Promise<string> {
-  const account = loadAccount();
-  if (!account) return "0.0000 ETH";
+  const account = requireAccount();
   try {
     const wei = await chain.getBalance({ address: account.address });
     return `${Number(formatEther(wei)).toFixed(4)} ETH`;
