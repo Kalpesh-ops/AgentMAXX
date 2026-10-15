@@ -7,25 +7,26 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space
 const jetBrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains-mono" });
 
 export const metadata: Metadata = {
-  title: "AgentMAXX | Autonomous Web3 Agent & Workflow Engine (Week 2: Build & Ship)",
+  title: "AgentMAXX | Autonomous On-Chain Agent & Web3 Wallet Engine (Week 3: Give It A Wallet)",
   description:
-    "Autonomous on-chain Web3 AI agent and workflow orchestration engine built for Agentmaxxing Week 2. Powered by Google Gemini 3.8 Flash and viem on Base Sepolia. Capable of multi-stage autonomous pipelines, live DexScreener DEX queries, Base RPC telemetry, and HTTP 402 EIP-191 machine-to-machine settlements.",
+    "Autonomous on-chain Web3 AI agent with live wallet capabilities built for Agentmaxxing Week 3. Powered by Google Gemini 3.8 Flash and viem on Base Sepolia. Features autonomous ETH transfers, on-chain calldata audit attestations, smart contract bytecode verification, dual-wallet integration, and x402 machine-to-machine settlements.",
   keywords: [
     "AI Agent",
     "Agentmaxxing",
-    "Agent Workflows",
-    "x402",
+    "Week 3 Give It A Wallet",
+    "On-Chain Agent",
     "Base Sepolia",
-    "DexScreener",
+    "Crypto Wallet",
+    "Smart Contract Verification",
+    "x402 Micropayments",
     "Google Gemini 3.8 Flash",
-    "Web3 AI",
-    "Micropayments",
+    "viem",
     "Rise In",
   ],
   authors: [{ name: "Kalpesh Parashar" }],
   openGraph: {
-    title: "AgentMAXX | Autonomous Web3 Agent & Workflow Engine",
-    description: "Self-paying AI Agent with chained multi-stage workflows, live DEX metrics, and x402 settlements on Base Sepolia.",
+    title: "AgentMAXX | Autonomous On-Chain Web3 Agent",
+    description: "AI Agent with a live Base Sepolia wallet, autonomous on-chain calldata notarization, smart contract verification, and x402 settlements.",
     type: "website",
   },
 };

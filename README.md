@@ -1,128 +1,127 @@
 # AgentMAXX ⚡
-### Autonomous Web3 Financial Executive, Workflow Engine & x402 Micropayments
-> **Built for Rise In Agentmaxxing — Week 2: "Build & Ship"**  
-> *(Upgraded from Week 1 Prototype to v2.0 Production Workflow Engine)*
+### Autonomous On-Chain Web3 Agent, Base Sepolia Wallet Engine & x402 Micropayments
+> **Built for Rise In Agentmaxxing — Week 3: "Give It A Wallet"**  
+> *(Evolved from Week 1 Prototype $\rightarrow$ Week 2 Workflow Engine $\rightarrow$ Week 3 Full Crypto-Enabled Autonomous Agent)*
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel)](https://agent-maxx.vercel.app)
-[![Network](https://img.shields.io/badge/Network-Base%20Sepolia%20RPC-blue?style=for-the-badge&logo=coinbase)](https://sepolia.basescan.org)
+[![Network](https://img.shields.io/badge/Network-Base%20Sepolia%20(Chain%20ID%2084532)-blue?style=for-the-badge&logo=coinbase)](https://sepolia.basescan.org)
 [![LLM](https://img.shields.io/badge/Model-Google%20Gemini%203.8%20Flash-orange?style=for-the-badge&logo=google)](https://aistudio.google.com)
-[![Protocol](https://img.shields.io/badge/Protocol-x402%20Micropayments-green?style=for-the-badge)](https://github.com/Kalpesh-ops/AgentMAXX)
-[![Workflows](https://img.shields.io/badge/Workflows-Multi--Stage%20DAG-purple?style=for-the-badge)](https://agent-maxx.vercel.app)
+[![Crypto Engine](https://img.shields.io/badge/Crypto%20Engine-viem%20v2%20+%20BaseScan-purple?style=for-the-badge)](https://sepolia.basescan.org)
+[![Protocol](https://img.shields.io/badge/Payments-x402%20EIP--191%20Settlements-green?style=for-the-badge)](https://agent-maxx.vercel.app)
 
 ---
 
-## 🚀 What&apos;s New in Week 2: Build & Ship
+## 💸 What&apos;s New in Week 3: "Give It A Wallet"
 
-In Week 1, we proved the foundational concept: an AI agent with an embedded cryptographic wallet on Base Sepolia capable of 1-shot tool execution and x402 payment signing.
+In Week 1 and 2, we built an AI agent capable of multi-stage workflows, live DEX telemetry, and machine-to-machine x402 signatures.
 
-In **Week 2: Build & Ship**, we took the agent from a basic prototype to an **orchestrated multi-stage workflow engine** connected to live external financial APIs and real-time on-chain RPC nodes:
+In **Week 3: Give It A Wallet**, we brought in the **on-chain crypto layer**. AgentMAXX is now an autonomous crypto agent with real wallet capabilities on **Base Sepolia (Chain ID: 84532)**:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        AGENTMAXX v2.0 ARCHITECTURE                      │
+│                   AGENTMAXX v3.0 CRYPTO ARCHITECTURE                   │
 ├────────────────────────────────────────────────────────────────────────┤
 │                                                                        │
-│   [ User / Judge ]                                                     │
-│          │                                                             │
-│          ▼                                                             │
+│   [ User / Web3 Wallet ] ◄─── Dual-Wallet Hub ───► [ Agent Wallet ]    │
+│   (MetaMask / Coinbase)                              (Base Sepolia)    │
+│            │                                                │          │
+│            ▼                                                ▼          │
 │   ┌──────────────────────────────────────────────────────────────┐     │
-│   │               COGNITIVE & WORKFLOW ORCHESTRATOR              │     │
-│   │            (Google Gemini 3.8 Flash + viem Engine)           │     │
-│   │   [Executive Mode]  [Alpha Hunter Mode]  [Auditor Mode]      │     │
-│   └──────────────────────┬──────────────────────────────┬────────┘     │
-│                          │                              │              │
-│        Sequential Chained Workflows                     │              │
-│        ┌─────────────────┴─────────────────┐            │              │
-│        ▼                                   ▼            ▼              │
-│   [Live DexScreener DEX]        [Contract Bytecode] [Base Sepolia RPC] │
-│   - AERO, BRETT, VIRTUAL        - Static Honeypot   - Block Height     │
-│   - Liquidity USD, 24h Vol      - Mint & Blacklist  - Gas Price (Gwei) │
-│        │                                   │            │              │
-│        └─────────────────┬─────────────────┘            │              │
-│                          ▼                              │              │
-│        [ Autonomous x402 Micropayment Engine ]          │              │
-│        - Detects HTTP 402 Payment Required              │              │
-│        - Signs EIP-191 with Base Sepolia Private Key    │              │
-│        - Settles 0.05 / 0.02 / 0.03 USDC in ms          │              │
-│                          │                              │              │
-│                          ▼                              ▼              │
+│   │           COGNITIVE ENGINE & ON-CHAIN CONTROLLER             │     │
+│   │             (Google Gemini 3.8 Flash + viem v2)              │     │
+│   └──────────────────────┬───────────────────────┬───────────────┘     │
+│                          │                       │                     │
+│       On-Chain Action Router                     │                     │
+│       ┌──────────────────┴──────────────────┐    │                     │
+│       ▼                                     ▼    ▼                     │
+│   [Live ETH Transfers]            [Calldata Notarization]              │
+│   - Direct Base Sepolia tx        - Encodes audit reports              │
+│   - Validates balance & gas       - Broadcasts to Base Sepolia ledger  │
+│   - Returns live BaseScan link    - Permanent on-chain proof           │
+│       │                                     │                          │
+│       └──────────────────┬──────────────────┘                          │
+│                          ▼                                             │
 │   ┌──────────────────────────────────────────────────────────────┐     │
-│   │              FINAL SYNTHESIS & AUDIT DOSSIER                 │     │
-│   │         (Multi-Stage Verified Evidence Briefing)             │     │
+│   │          ON-CHAIN VERIFICATION & M2M PAYMENT SUITE           │     │
+│   │  • Smart Contract Bytecode Inspection (Honeypot detection)   │     │
+│   │  • EIP-191 Micropayment Handshakes (x402 Protocol)           │     │
+│   │  • Live Base Sepolia RPC Telemetry (Block, Gas in Gwei)      │     │
 │   └──────────────────────────────────────────────────────────────┘     │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ⚡ New Capabilities & Workflow Innovations
+## ⚡ Core Crypto Capabilities (Week 3 Requirements)
 
-### 1. 🔄 Multi-Stage Autonomous Workflow Pipelines (`agent/workflows.ts`)
-Instead of answering isolated prompts, AgentMAXX orchestrates multi-step sequential execution pipelines:
-- **🔎 Pipeline A: Autonomous Token & Contract Due Diligence**:
-  - *Stage 1*: Queries real-time DEX liquidity, pool depth, and 24h volume via DexScreener.
-  - *Stage 2*: Audits contract bytecode for honeypot vectors, hidden mint privileges, and liquidity locks.
-  - *Stage 3*: Autonomously pays 0.02 USDC via x402 for quantitative momentum and whale cold-storage flows.
-  - *Stage 4*: Gemini 3.8 Flash synthesizes all collected evidence into an institutional Due Diligence Dossier.
-- **⚡ Pipeline B: Global Macro Regime & Cross-Domain Alpha**:
-  - *Stage 1*: Autonomously pays 0.05 USDC via x402 for Fear & Greed index and narrative momentum.
-  - *Stage 2*: Pulls live benchmark spot prices for BTC, ETH, and SOL.
-  - *Stage 3*: Autonomously pays 0.01 USDC via x402 for data center cooling and weather energy metrics.
-  - *Stage 4*: Synthesizes a cross-domain macroeconomic liquidity report.
-- **🛡️ Pipeline C: Autonomous Treasury & Gas Optimization**:
-  - *Stage 1*: Queries live Base Sepolia RPC for real-time gas fees in Gwei and block height.
-  - *Stage 2*: Inspects agent wallet balance, address, and on-chain nonce.
-  - *Stage 3*: Models tokenomics compound runway for 5,000 future autonomous x402 payments.
-  - *Stage 4*: Generates an actionable Treasury Management Directive.
+### 1. 💳 Dual-Wallet Architecture (User + Agent)
+- **Agent Dedicated Wallet**: The agent owns an on-chain keypair initialized on **Base Sepolia** (`viem` PrivateKeyAccount), capable of signing transactions, holding ETH/tokens, paying for services, and broadcasting calldata.
+- **User Web3 Connection**: Users can connect their own browser wallet (MetaMask, Coinbase Wallet, Rainbow) via standard `window.ethereum` RPC (`eth_requestAccounts`) and switch seamlessly to Base Sepolia (Chain ID: `0x14a34` / `84532`).
+- **1-Click Funding**: Users can fund the agent's autonomous wallet directly with test ETH via Web3 transfer from within the UI.
 
-### 2. 🌐 Connected Live External Services & On-Chain RPC
-- **DexScreener API Integration (`search_dex_pairs`)**: Real-time liquidity, price USD, 24h volume, FDV, and price changes for any DEX pair across Base, Ethereum, and Solana.
-- **Live Base Sepolia RPC Integration (`get_chain_telemetry`)**: Direct connection to Base Sepolia via Viem public client, reporting live block height, gas price in Gwei, and network latency.
+### 2. 💸 Autonomous On-Chain ETH Transfers (`sendOnChainPayment`)
+- AgentMAXX can initiate real on-chain native ETH transactions on Base Sepolia.
+- Validates recipient checksum addresses, evaluates live gas prices from the Base Sepolia RPC, and submits the transaction with cryptographic receipts.
+- Direct live links to [BaseScan Sepolia](https://sepolia.basescan.org) for instant verification.
 
-### 3. 🎭 Multi-Agent Persona Profiles
-Toggle between customized agent cognitive personalities on the fly:
-- **Executive Mode 💼**: Institutional, risk-adjusted, Wall-Street-grade synthesis.
-- **Alpha Hunter Mode ⚡**: High-tempo on-chain degen scout hunting for DEX volume surges and whale breakouts.
-- **Security Auditor Mode 🛡️**: Zero-trust bytecode vulnerability analyzer and exploit simulator.
+### 3. 📜 On-Chain Calldata Notarization (`publishOnChainAttestation`)
+- **Where Crypto Actually Makes Sense for AI Agents**: Rather than storing audit logs off-chain, AgentMAXX serializes its security findings, token evaluations, or verification proofs into raw hex calldata (`0x...`) and broadcasts an on-chain transaction to Base Sepolia.
+- The transaction permanently etches the AI audit digest into Ethereum state, creating tamper-proof, timestamped, immutable **Proof-of-Audit**.
 
-### 4. 🎬 In-App Interactive Demo & Walkthrough Guide
-A dedicated interactive tour designed specifically for competition judges:
-- **Act 1**: Autonomous Financial Agency
-- **Act 2**: Machine-to-Machine HTTP 402 Handshake & EIP-191 Signing
-- **Act 3**: Multi-Stage Chained Agentic Workflows
-- **Act 4**: Live On-Chain Base Sepolia Telemetry
+### 4. 🔍 Live Smart Contract Bytecode Verification (`verifyContractBytecode`)
+- Connects to Base Sepolia RPC via `publicClient.getBytecode({ address })`.
+- Inspects target contract bytecode on-chain, measures exact byte size, detects self-destruct opcodes (`0xff`), owner-only balance drains, or verifies whether an address is an EOA or a deployed smart contract.
+
+### 5. 🤖 Week 3 Workflow: On-Chain Audit & Notarization Pipeline
+- **Stage 1**: Query live DEX liquidity and price metrics via DexScreener.
+- **Stage 2**: Inspect target smart contract bytecode live on Base Sepolia.
+- **Stage 3**: Settle 0.02 USDC via x402 EIP-191 micropayment for off-chain quantitative signals.
+- **Stage 4**: Synthesize executive audit findings with Gemini 3.8 Flash.
+- **Stage 5**: **Broadcast immutable Proof-of-Audit calldata transaction** to Base Sepolia, returning the notarized hash!
 
 ---
 
-## 🎬 Judge Walkthrough & Demo Guide
+## 🎬 Judge Walkthrough & Demo Guide (Under 90 Seconds)
 
-To experience AgentMAXX in under 60 seconds:
+Experience all Week 3 crypto capabilities live right now:
 
-1. **Visit the Live Production App**: [https://agent-maxx.vercel.app/](https://agent-maxx.vercel.app/)
-2. **Tab 02 (Agentic Workflows)**:
-   - Select **&ldquo;Autonomous Token & Contract Due Diligence&rdquo;**.
-   - Click **&ldquo;Launch Autonomous Workflow&rdquo;**.
-   - Watch the agent sequentially execute Stage 1 (DexScreener) $\rightarrow$ Stage 2 (Contract Audit) $\rightarrow$ Stage 3 (x402 Alpha Payment) $\rightarrow$ Stage 4 (Executive Synthesis) with real-time timers and cryptographic payment receipts.
-3. **Tab 01 (Executive Console)**:
-   - Click the prompt chip **&ldquo;🔎 Live DEX Query (AERO)&rdquo;** or **&ldquo;📊 Market Intel (0.05 USDC)&rdquo;**.
-   - Watch the agent autonomously sign the payment with its Base Sepolia wallet and render the response.
-4. **Tab 03 (Live Base RPC Telemetry)**:
-   - Observe live Base Sepolia block height updating in real time with live gas price in Gwei.
-5. **Tab 04 (Demo & Walkthrough Guide)**:
-   - Click **&ldquo;Run Guided Demo&rdquo;** to run the 4-act capability demonstration.
+1. **Visit Live App**: [https://agent-maxx.vercel.app/](https://agent-maxx.vercel.app/)
+2. **Explore Tab 03 — "Crypto & On-Chain Hub"**:
+   - Inspect the **Agent On-Chain Wallet** address on Base Sepolia.
+   - Click **"Connect User Wallet"** to pair your MetaMask/browser wallet and see your address and balance side-by-side.
+   - Click **"Test Transfer"** or enter any Base Sepolia address to see the agent execute an on-chain ETH transfer.
+   - Click **"Publish Proof-of-Audit"** to see the agent serialize an audit digest into UTF-8 $\rightarrow$ Hex calldata and broadcast the transaction.
+   - Enter any contract address (e.g. AERO, BRETT, or the agent address) and click **"Inspect Bytecode"** to verify on-chain deployment.
+3. **Explore Tab 02 — "Agentic Workflows"**:
+   - Select **"⛓️ On-Chain Audit & Notarization Pipeline"**.
+   - Click **"Launch Autonomous Workflow"**.
+   - Watch the 5-stage pipeline execute, ending with an on-chain notarization receipt on Base Sepolia.
+4. **Explore Tab 01 — "Executive Console"**:
+   - Ask the agent: *"Send 0.0001 ETH to 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on Base Sepolia"* or *"Notarize an audit for Brett on Base Sepolia"*.
+   - Watch Gemini 3.8 Flash autonomously invoke the corresponding crypto tool and return real on-chain transaction metadata.
 
 ---
 
-## 🏆 Week 2 Hackathon Submission Details
+## 🏆 Week 3 Hackathon Submission Details
 
-- **Submission Deadline**: October 16
-- **Live Agent Link**: [https://agent-maxx.vercel.app/](https://agent-maxx.vercel.app/)
+- **Challenge**: Rise In Agentmaxxing — Week 3: Give It A Wallet
+- **Submission Deadline**: October 23
+- **Live Production App**: [https://agent-maxx.vercel.app/](https://agent-maxx.vercel.app/)
 - **GitHub Repository**: [https://github.com/Kalpesh-ops/AgentMAXX](https://github.com/Kalpesh-ops/AgentMAXX)
+- **Target Network**: Base Sepolia Testnet (Chain ID: 84532)
 - **Developer**: Kalpesh Parashar
-- **Track**: Rise In Agentmaxxing — Week 2: Build & Ship
 
-### Brief Note on Week 2 Iterations & Learnings
-> *"In Week 2, we transitioned AgentMAXX from a reactive tool-caller to an autonomous workflow orchestrator. We learned how to chain multi-stage pipelines where intermediate outputs become inputs for subsequent stages—such as feeding live DEX liquidity into bytecode security analysis before paying for quantitative alpha. We integrated live external services (DexScreener DEX queries) and synchronized with live Base Sepolia RPC nodes. Building the in-app interactive walkthrough demonstrated that an agent's true power lies in explainability, transparent cryptographic verification, and end-to-end multi-step agency."*
+### Key Week 3 Learnings & Crypto Reflection
+> *"Giving an AI agent a crypto wallet fundamentally changes its nature: it transforms from an advice-generator into an autonomous economic actor. By equipping AgentMAXX with a dedicated Base Sepolia wallet using viem, the agent can hold capital, execute native transactions, and notarize its intelligence directly into the blockchain ledger. We also discovered where crypto makes the most sense for agents: immutable audit proofs via calldata notarization, machine-to-machine x402 micropayments where credit cards are impossible, and verifiable smart contract bytecode inspection before capital allocation."*
+
+---
+
+## 🛠️ Tech Stack
+- **Framework**: Next.js 16 (App Router), TypeScript, Tailwind CSS, Lucide Icons
+- **Blockchain**: Base Sepolia (Chain ID: 84532), `viem` v2, BaseScan API
+- **AI Engine**: Google Gemini 3.8 Flash (`@google/genai`)
+- **Micropayments**: HTTP 402 Payment Required + EIP-191 Personal Signatures
+- **Hosting**: Vercel Serverless Edge
 
 ---
 

@@ -34,6 +34,11 @@ import {
   Sliders,
   BarChart3,
   CheckCircle2,
+  Send,
+  Link as LinkIcon,
+  Globe,
+  Coins,
+  FileCheck2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -85,9 +90,19 @@ type WorkflowDef = {
 
 const PRESET_PROMPTS = [
   {
-    label: "🔎 Live DEX Query (AERO)",
-    prompt: "Search real-time DEX liquidity, price, and 24h volume for AERO on Base via DexScreener.",
-    type: "free",
+    label: "💸 Send 0.0001 Base ETH",
+    prompt: "Execute an on-chain transfer of 0.0001 Base Sepolia ETH to 0x000000000000000000000000000000000000dEaD.",
+    type: "crypto",
+  },
+  {
+    label: "📜 On-Chain Attestation",
+    prompt: "Publish an on-chain Proof-of-Audit attestation for Aerodrome Finance on Base Sepolia.",
+    type: "crypto",
+  },
+  {
+    label: "🔎 On-Chain Bytecode Scan",
+    prompt: "Verify deployed on-chain bytecode and account type for address 0x940181a94A35A4569E4529A3CDfB74e48FD98631.",
+    type: "crypto",
   },
   {
     label: "📊 Market Intel (0.05 USDC)",
@@ -105,8 +120,8 @@ const PRESET_PROMPTS = [
     type: "paid",
   },
   {
-    label: "🌐 Base Sepolia Telemetry",
-    prompt: "Fetch live Base Sepolia RPC metrics, current block number, and live gas price.",
+    label: "🔎 Live DEX Query (AERO)",
+    prompt: "Search real-time DEX liquidity, price, and 24h volume for AERO on Base via DexScreener.",
     type: "free",
   },
   {
@@ -115,8 +130,8 @@ const PRESET_PROMPTS = [
     type: "free",
   },
   {
-    label: "🧮 Compound Staking Yield",
-    prompt: "Calculate compound staking yield for 10,000 USDC at 12% APY for 1 year.",
+    label: "🌐 Base Sepolia Telemetry",
+    prompt: "Fetch live Base Sepolia RPC metrics, current block number, and live gas price.",
     type: "free",
   },
   {
@@ -127,7 +142,7 @@ const PRESET_PROMPTS = [
 ];
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<"chat" | "workflows" | "telemetry" | "demo">("chat");
+  const [activeTab, setActiveTab] = useState<"chat" | "workflows" | "crypto" | "demo">("chat");
   const [persona, setPersona] = useState<"executive" | "alpha-hunter" | "security-auditor">("executive");
   const [status, setStatus] = useState<Status | null>(null);
   const [wallet, setWallet] = useState<WalletInfo | null>(null);
@@ -137,13 +152,36 @@ export default function Home() {
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [toolFilter, setToolFilter] = useState<"all" | "paid" | "free">("all");
+  const [toolFilter, setToolFilter] = useState<"all" | "crypto" | "paid" | "free">("all");
   const [showSubmissionModal, setShowSubmissionModal] = useState(false);
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [privateKey, setPrivateKey] = useState<string | null>(null);
 
+  // WEEK 3: Web3 User Browser Wallet Connection State
+  const [userAddress, setUserAddress] = useState<string | null>(null);
+  const [userBalance, setUserBalance] = useState<string | null>(null);
+  const [userNetwork, setUserNetwork] = useState<string | null>(null);
+  const [connectingUserWallet, setConnectingUserWallet] = useState(false);
+  const [fundingAgent, setFundingAgent] = useState(false);
+
+  // WEEK 3: On-Chain Action Form States
+  const [transferRecipient, setTransferRecipient] = useState("0x000000000000000000000000000000000000dEaD");
+  const [transferAmount, setTransferAmount] = useState("0.0001");
+  const [transferStatus, setTransferStatus] = useState<any | null>(null);
+  const [transferring, setTransferring] = useState(false);
+
+  const [attestTitle, setAttestTitle] = useState("Aerodrome Protocol Security Attestation");
+  const [attestTarget, setAttestTarget] = useState("0x940181a94A35A4569E4529A3CDfB74e48FD98631");
+  const [attestSummary, setAttestSummary] = useState("Passed bytecode static analysis and liquidity lock checks on Base Sepolia.");
+  const [attestStatus, setAttestStatus] = useState<any | null>(null);
+  const [attesting, setAttesting] = useState(false);
+
+  const [bytecodeInput, setBytecodeInput] = useState("0x940181a94A35A4569E4529A3CDfB74e48FD98631");
+  const [bytecodeData, setBytecodeData] = useState<any | null>(null);
+  const [inspectingBytecode, setInspectingBytecode] = useState(false);
+
   // Workflow execution state
-  const [selectedWorkflow, setSelectedWorkflow] = useState<string>("due_diligence_pipeline");
+  const [selectedWorkflow, setSelectedWorkflow] = useState<string>("onchain_notarization_pipeline");
   const [workflowParams, setWorkflowParams] = useState<Record<string, any>>({});
   const [workflowRunning, setWorkflowRunning] = useState(false);
   const [workflowResult, setWorkflowResult] = useState<any | null>(null);
@@ -181,7 +219,7 @@ export default function Home() {
     loadTelemetry();
     loadWorkflows();
 
-    const interval = setInterval(loadTelemetry, 12000);
+    const interval = setInterval(loadTelemetry, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -207,6 +245,141 @@ export default function Home() {
     } catch {}
   }
 
+  // Connect User Web3 Browser Wallet (MetaMask, Coinbase Wallet)
+  async function connectUserWallet() {
+    if (typeof window === "undefined" || !(window as any).ethereum) {
+      alert("No EVM wallet extension detected. Please install MetaMask or Coinbase Wallet.");
+      return;
+    }
+    setConnectingUserWallet(true);
+    try {
+      const provider = (window as any).ethereum;
+      const accounts = await provider.request({ method: "eth_requestAccounts" });
+      if (accounts?.[0]) {
+        setUserAddress(accounts[0]);
+        try {
+          await provider.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x14a34" }], // 84532 in hex
+          });
+        } catch (switchError: any) {
+          if (switchError.code === 4902) {
+            await provider.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: "0x14a34",
+                  chainName: "Base Sepolia Testnet",
+                  nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 },
+                  rpcUrls: ["https://sepolia.base.org"],
+                  blockExplorerUrls: ["https://sepolia.basescan.org"],
+                },
+              ],
+            });
+          }
+        }
+        const bal = await provider.request({
+          method: "eth_getBalance",
+          params: [accounts[0], "latest"],
+        });
+        const wei = parseInt(bal, 16);
+        setUserBalance((wei / 1e18).toFixed(4) + " ETH");
+        setUserNetwork("Base Sepolia (84532)");
+      }
+    } catch (err: any) {
+      console.error("Wallet connect error:", err);
+    }
+    setConnectingUserWallet(false);
+  }
+
+  // 1-Click Fund Agent Treasury from User's Connected Wallet
+  async function fundAgentFromUser() {
+    if (!userAddress || !wallet?.address) return;
+    setFundingAgent(true);
+    try {
+      const provider = (window as any).ethereum;
+      const txHash = await provider.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            from: userAddress,
+            to: wallet.address,
+            value: "0x38d7ea4c68000", // 0.001 ETH
+          },
+        ],
+      });
+      alert(`Funding transaction submitted! Tx Hash: ${txHash}`);
+      setTimeout(loadWallet, 4000);
+    } catch (err: any) {
+      alert(`Funding error: ${err.message}`);
+    }
+    setFundingAgent(false);
+  }
+
+  // Execute On-Chain Transfer
+  async function handleOnChainTransfer() {
+    if (!transferRecipient) return;
+    setTransferring(true);
+    setTransferStatus(null);
+    try {
+      const res = await fetch("/api/wallet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "transfer",
+          to: transferRecipient,
+          amountEth: transferAmount,
+        }),
+      });
+      const data = await res.json();
+      setTransferStatus(data);
+      loadWallet();
+    } catch (err: any) {
+      setTransferStatus({ error: err.message });
+    }
+    setTransferring(false);
+  }
+
+  // Publish On-Chain Proof-of-Audit Attestation
+  async function handleOnChainAttest() {
+    if (!attestTitle || !attestSummary) return;
+    setAttesting(true);
+    setAttestStatus(null);
+    try {
+      const res = await fetch("/api/wallet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "attest",
+          title: attestTitle,
+          summary: attestSummary,
+          target: attestTarget,
+        }),
+      });
+      const data = await res.json();
+      setAttestStatus(data);
+      loadWallet();
+    } catch (err: any) {
+      setAttestStatus({ error: err.message });
+    }
+    setAttesting(false);
+  }
+
+  // Inspect Bytecode on Base Sepolia
+  async function handleInspectBytecode() {
+    if (!bytecodeInput) return;
+    setInspectingBytecode(true);
+    setBytecodeData(null);
+    try {
+      const res = await fetch(`/api/wallet?bytecode=${encodeURIComponent(bytecodeInput)}`);
+      const data = await res.json();
+      setBytecodeData(data);
+    } catch (err: any) {
+      setBytecodeData({ error: err.message });
+    }
+    setInspectingBytecode(false);
+  }
+
   async function send(text: string) {
     if (!text.trim() || thinking) return;
     const history: Message[] = [...messages, { role: "user", text }];
@@ -230,7 +403,7 @@ export default function Home() {
           ? { role: "agent", text: data.error, error: true }
           : { role: "agent", text: data.answer, steps: data.steps },
       ]);
-      if (data.steps?.some((s: Step) => s.result?.payment)) loadWallet();
+      if (data.steps?.some((s: Step) => s.result?.payment || s.tool === "send_onchain_payment")) loadWallet();
     } catch {
       setMessages((m) => [
         ...m,
@@ -283,6 +456,7 @@ export default function Home() {
   const ready = Boolean(status?.hasApiKey);
 
   const filteredTools = status?.tools.filter((t) => {
+    if (toolFilter === "crypto") return t.category === "onchain-action";
     if (toolFilter === "paid") return t.category === "x402-paid";
     if (toolFilter === "free") return t.category === "free-utility";
     return true;
@@ -305,7 +479,7 @@ export default function Home() {
               <span className="text-muted-foreground">/</span>
               <span className="text-primary font-bold">AGENTMAXXING</span>
               <span className="text-muted-foreground text-[10px] bg-primary/10 px-1 py-0.2 border border-primary/30">
-                WEEK 2: BUILD & SHIP
+                WEEK 3: GIVE IT A WALLET
               </span>
             </div>
             <Badge variant="outline" className="font-mono text-xs text-primary border-primary/30 flex items-center gap-1">
@@ -323,7 +497,7 @@ export default function Home() {
             {wallet?.address && (
               <div className="flex items-center gap-2 border border-border bg-muted/50 px-3 py-1 font-mono text-xs text-muted-foreground">
                 <Wallet className="size-3.5 text-primary" />
-                <span>Treasury: <strong className="text-primary">{wallet.balance || "0.0000 ETH"}</strong></span>
+                <span>Agent Treasury: <strong className="text-primary">{wallet.balance || "0.0000 ETH"}</strong></span>
               </div>
             )}
             <Button
@@ -332,27 +506,27 @@ export default function Home() {
               onClick={() => setShowSubmissionModal(true)}
               className="border-primary/50 text-primary hover:bg-primary/10 font-mono text-xs uppercase"
             >
-              <Award className="size-3.5 mr-1" /> Week 2 Submission Package
+              <Award className="size-3.5 mr-1" /> Week 3 Submission Package
             </Button>
           </div>
         </div>
 
-        {/* Hero Title & Mode Switcher */}
+        {/* Hero Title & Persona Switcher */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs font-semibold tracking-wider text-primary uppercase">
-                Autonomous Workflow Engine & On-Chain Intelligence
+                Autonomous Crypto-Enabled AI Agent & On-Chain Hub
               </span>
               <span className="rounded bg-primary/20 px-1.5 py-0.5 font-mono text-[10px] text-primary">
-                v2.0 SHIP EDITION
+                v3.0 CRYPTO WALLET EDITION
               </span>
             </div>
             <h1 className="text-5xl font-black tracking-tight uppercase md:text-7xl">
               AGENT<span className="text-primary">MAXX</span>
             </h1>
             <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground md:text-base">
-              Autonomous on-chain Web3 agent with native Base Sepolia crypto treasury. Executes chained multi-stage workflows, live DEX queries, and x402 EIP-191 micropayment settlements.
+              Autonomous on-chain Web3 agent with native Base Sepolia crypto treasury. Executes live on-chain ETH transactions, writes immutable proof-of-audit attestations, and connects user Web3 wallets.
             </p>
           </div>
 
@@ -397,7 +571,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* View Switcher Tabs (Week 2 Core Innovation) */}
+        {/* View Switcher Tabs (Week 3 Enhanced Navigation) */}
         <div className="flex flex-wrap items-center gap-2 border-b border-border/80 pb-2 font-mono text-xs">
           <button
             onClick={() => setActiveTab("chat")}
@@ -422,15 +596,15 @@ export default function Home() {
             <Layers className="size-3.5" /> 02. Agentic Workflows ({workflows.length})
           </button>
           <button
-            onClick={() => setActiveTab("telemetry")}
+            onClick={() => setActiveTab("crypto")}
             className={cn(
               "flex items-center gap-2 border px-4 py-2 uppercase transition-all",
-              activeTab === "telemetry"
+              activeTab === "crypto"
                 ? "border-primary bg-primary/10 text-primary font-bold shadow-sm"
                 : "border-border/60 bg-muted/20 text-muted-foreground hover:border-border hover:text-foreground"
             )}
           >
-            <Activity className="size-3.5" /> 03. Live Base RPC Telemetry
+            <Coins className="size-3.5" /> 03. Crypto & On-Chain Hub
           </button>
           <button
             onClick={() => setActiveTab("demo")}
@@ -457,7 +631,7 @@ export default function Home() {
               </CardHeader>
               <CardContent className="flex flex-col pt-4">
                 <SetupStep number={1} title={`Gemini 3.8 Flash (${persona.toUpperCase()})`} done={ready}>
-                  {ready && <p className="text-xs text-muted-foreground">Active with multi-stage reasoning loop.</p>}
+                  {ready && <p className="text-xs text-muted-foreground">Active with on-chain execution loop.</p>}
                   {!ready && <p className="text-xs text-muted-foreground">Configure GEMINI_API_KEY to start.</p>}
                 </SetupStep>
 
@@ -475,9 +649,9 @@ export default function Home() {
                   )}
                 </SetupStep>
 
-                <SetupStep number={3} title="x402 Autonomous Machine Settlement" done={Boolean(wallet?.address)} last>
+                <SetupStep number={3} title="On-Chain & x402 Capabilities" done={Boolean(wallet?.address)} last>
                   <p className="text-xs text-muted-foreground">
-                    Autonomously signs HTTP 402 invoices via EIP-191 to unlock paid APIs without human checkout.
+                    Executes real Base Sepolia ETH transfers, writes on-chain calldata attestations, and settles x402 paid APIs.
                   </p>
                 </SetupStep>
               </CardContent>
@@ -494,6 +668,12 @@ export default function Home() {
                       className={cn("px-2 py-0.5", toolFilter === "all" ? "bg-primary text-primary-foreground font-bold" : "text-muted-foreground")}
                     >
                       All
+                    </button>
+                    <button
+                      onClick={() => setToolFilter("crypto")}
+                      className={cn("px-2 py-0.5", toolFilter === "crypto" ? "bg-primary text-primary-foreground font-bold" : "text-muted-foreground")}
+                    >
+                      On-Chain
                     </button>
                     <button
                       onClick={() => setToolFilter("paid")}
@@ -517,7 +697,9 @@ export default function Home() {
                       <p className="font-mono text-xs font-semibold text-foreground">
                         <span className="text-primary">&gt;</span> {t.name}
                       </p>
-                      {t.category === "x402-paid" ? (
+                      {t.category === "onchain-action" ? (
+                        <Badge className="bg-primary/20 text-primary border border-primary/40 font-mono text-[10px]">ON-CHAIN</Badge>
+                      ) : t.category === "x402-paid" ? (
                         <Badge className="bg-blue/80 font-mono text-[10px] text-foreground">{t.cost || "PAID"}</Badge>
                       ) : (
                         <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground">FREE</Badge>
@@ -569,9 +751,9 @@ export default function Home() {
                       <Bot className="size-8" />
                     </div>
                     <div className="max-w-md">
-                      <h2 className="text-2xl font-bold uppercase tracking-tight">AgentMAXX Online</h2>
+                      <h2 className="text-2xl font-bold uppercase tracking-tight">AgentMAXX Crypto Edition</h2>
                       <p className="mt-1.5 text-xs text-muted-foreground">
-                        Ready to execute chained tool workflows, DexScreener queries, and Base Sepolia x402 settlements.
+                        Ready to execute Base Sepolia on-chain transactions, proof-of-audit attestations, DexScreener lookups, and x402 settlements.
                       </p>
                     </div>
                     <div className="grid w-full max-w-lg grid-cols-1 gap-2 sm:grid-cols-2">
@@ -630,7 +812,7 @@ export default function Home() {
                     <div className="flex size-6 items-center justify-center border border-primary/40 bg-background">
                       <Sparkles className="size-3.5 text-primary animate-spin" />
                     </div>
-                    <span>AgentMAXX analyzing cognitive loop & executing tools...</span>
+                    <span>AgentMAXX analyzing cognitive loop & executing on-chain tools...</span>
                     <span className="inline-block h-3 w-1.5 animate-pulse bg-primary" />
                   </div>
                 )}
@@ -653,7 +835,7 @@ export default function Home() {
                   <Input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder={ready ? "Enter command or ask AgentMAXX to execute tools..." : "Configure GEMINI_API_KEY to start"}
+                    placeholder={ready ? "Enter prompt, on-chain transfer, or attestation instruction..." : "Configure GEMINI_API_KEY to start"}
                     disabled={!ready}
                     className="h-11 border-0 bg-transparent font-mono text-xs focus-visible:ring-0"
                   />
@@ -667,7 +849,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* TAB 2: AGENTIC WORKFLOWS RUNNER (Week 2 Core Innovation) */}
+      {/* TAB 2: AGENTIC WORKFLOWS RUNNER */}
       {activeTab === "workflows" && (
         <div className="grid flex-1 gap-6 lg:grid-cols-[420px_1fr]">
           {/* Left: Workflow Selection & Parameters */}
@@ -793,7 +975,7 @@ export default function Home() {
                 <div className="flex flex-col items-center justify-center py-20 gap-4">
                   <div className="size-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
                   <p className="font-mono text-sm text-foreground">
-                    AgentMAXX orchestrating multi-stage pipeline & x402 settlements...
+                    AgentMAXX orchestrating multi-stage pipeline & on-chain operations...
                   </p>
                   <p className="font-mono text-xs text-muted-foreground">
                     Executing sequential tool calls, verifying EIP-191 signatures, and synthesizing final dossier.
@@ -889,111 +1071,324 @@ export default function Home() {
         </div>
       )}
 
-      {/* TAB 3: LIVE BASE SEPOLIA RPC TELEMETRY */}
-      {activeTab === "telemetry" && (
-        <div className="grid flex-1 gap-6 lg:grid-cols-[1fr_380px]">
-          {/* Main Telemetry Stats */}
+      {/* TAB 3: CRYPTO & ON-CHAIN HUB (WEEK 3 HEADLINE FEATURE) */}
+      {activeTab === "crypto" && (
+        <div className="grid flex-1 gap-6 lg:grid-cols-[1fr_420px]">
+          {/* Main Column: Dual Wallet & On-Chain Action Center */}
           <div className="flex flex-col gap-6">
+            {/* Dual Wallet Status Card */}
             <Card className="border-border">
               <CardHeader className="border-b border-border/80">
-                <div className="flex items-center justify-between">
-                  <SectionTitle num="01" title="Base Sepolia Live Node Metrics" />
-                  <Button variant="ghost" size="sm" onClick={loadTelemetry} className="font-mono text-xs uppercase">
-                    <RefreshCw className="size-3 mr-1" /> Refresh RPC
-                  </Button>
-                </div>
+                <SectionTitle num="01" title="Dual-Wallet Web3 Architecture" />
               </CardHeader>
-              <CardContent className="pt-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="border border-border bg-muted/30 p-4 font-mono">
-                    <p className="text-muted-foreground text-xs uppercase">Block Height</p>
-                    <p className="text-2xl font-black text-primary mt-1">
-                      #{telemetry?.blockNumber || "48,034,500"}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">Base Sepolia L2</p>
+              <CardContent className="pt-6 flex flex-col gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Agent Autonomous Wallet */}
+                  <div className="border border-primary/40 bg-primary/5 p-4 font-mono text-xs flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-bold text-primary">AGENT TREASURY WALLET</span>
+                        <Badge className="bg-primary text-primary-foreground font-mono text-[10px]">AUTONOMOUS</Badge>
+                      </div>
+                      <p className="text-muted-foreground text-[11px]">Address (Base Sepolia):</p>
+                      <code className="text-foreground text-xs break-all block mt-0.5">
+                        {wallet?.address || "Initializing..."}
+                      </code>
+                      <p className="mt-3 text-muted-foreground text-[11px]">On-Chain Balance:</p>
+                      <p className="text-xl font-black text-primary">{wallet?.balance || "0.0000 ETH"}</p>
+                    </div>
+                    <div className="mt-4 flex gap-2 pt-2 border-t border-border">
+                      <a
+                        href={wallet?.explorerUrl || `https://sepolia.basescan.org/address/${wallet?.address}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary"
+                      >
+                        BaseScan <ExternalLink className="size-3" />
+                      </a>
+                      <a
+                        href={wallet?.faucetUrl || "https://faucets.chain.link/base-sepolia"}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-primary ml-auto"
+                      >
+                        Get Test ETH <ExternalLink className="size-3" />
+                      </a>
+                    </div>
                   </div>
 
-                  <div className="border border-border bg-muted/30 p-4 font-mono">
-                    <p className="text-muted-foreground text-xs uppercase">Live Gas Price</p>
-                    <p className="text-2xl font-black text-foreground mt-1">
-                      {telemetry?.gasPriceGwei || "0.0050 Gwei"}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">Ultra-low L2 execution</p>
-                  </div>
-
-                  <div className="border border-border bg-muted/30 p-4 font-mono">
-                    <p className="text-muted-foreground text-xs uppercase">RPC Latency</p>
-                    <p className="text-2xl font-black text-primary mt-1">
-                      {telemetry?.latencyMs ?? 85} ms
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">Public Viem Transport</p>
-                  </div>
-
-                  <div className="border border-border bg-muted/30 p-4 font-mono">
-                    <p className="text-muted-foreground text-xs uppercase">Chain ID</p>
-                    <p className="text-2xl font-black text-foreground mt-1">
-                      {telemetry?.chainId || 84532}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-1">EVM Compatible</p>
-                  </div>
-                </div>
-
-                <div className="mt-6 border border-border bg-background p-4 font-mono text-xs">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-foreground">RPC STATUS:</span>
-                    <span className="text-primary font-bold">{telemetry?.rpcStatus || "Operational"}</span>
-                  </div>
-                  <div className="text-muted-foreground text-[11px] leading-relaxed">
-                    AgentMAXX maintains a continuous connection to Base Sepolia via Viem. Every x402 payment authorization signs an EIP-191 digest verified against this state.
+                  {/* User Connected Web3 Wallet */}
+                  <div className="border border-border bg-muted/20 p-4 font-mono text-xs flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-bold text-foreground">USER WEB3 WALLET</span>
+                        <Badge variant="outline" className="font-mono text-[10px]">BROWSER EXTENSION</Badge>
+                      </div>
+                      {userAddress ? (
+                        <>
+                          <p className="text-muted-foreground text-[11px]">Connected Address:</p>
+                          <code className="text-foreground text-xs break-all block mt-0.5">{userAddress}</code>
+                          <p className="mt-3 text-muted-foreground text-[11px]">User Balance:</p>
+                          <p className="text-xl font-black text-foreground">{userBalance || "0.0000 ETH"}</p>
+                          <p className="text-[10px] text-primary mt-1">{userNetwork}</p>
+                        </>
+                      ) : (
+                        <div className="py-3 text-center">
+                          <p className="text-muted-foreground text-xs mb-3">Connect MetaMask or Coinbase Wallet on Base Sepolia</p>
+                          <Button
+                            onClick={connectUserWallet}
+                            disabled={connectingUserWallet}
+                            className="font-mono text-xs uppercase"
+                          >
+                            <LinkIcon className="size-3.5 mr-1" /> {connectingUserWallet ? "Connecting..." : "Connect User Wallet"}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    {userAddress && (
+                      <div className="mt-4 pt-2 border-t border-border flex items-center justify-between">
+                        <Button
+                          onClick={fundAgentFromUser}
+                          disabled={fundingAgent}
+                          size="sm"
+                          className="font-mono text-xs uppercase w-full bg-primary text-primary-foreground"
+                        >
+                          <Coins className="size-3.5 mr-1" /> {fundingAgent ? "Broadcasting..." : "1-Click Fund Agent (0.001 ETH)"}
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Live DexScreener Test Tool */}
+            {/* Action 1: On-Chain ETH Transfer */}
             <Card className="border-border">
               <CardHeader className="border-b border-border/80">
-                <SectionTitle num="02" title="DexScreener Live DEX Network Integration" />
+                <SectionTitle num="02" title="Execute Live On-Chain ETH Transfer (Base Sepolia)" />
               </CardHeader>
-              <CardContent className="pt-4">
-                <p className="text-xs text-muted-foreground mb-4">
-                  Test the agent&apos;s new Week 2 external DEX connection. Pulls live token pairs, pool liquidity, and 24h volume on Base directly:
+              <CardContent className="pt-4 flex flex-col gap-3 font-mono text-xs">
+                <p className="text-muted-foreground text-[11px] leading-relaxed">
+                  The agent creates, cryptographically signs, and broadcasts a live transaction to Base Sepolia testnet miners.
                 </p>
-                <div className="flex gap-2 mb-4">
-                  <Input
-                    id="dex-search-input"
-                    defaultValue="AERO"
-                    placeholder="Enter token symbol (e.g. AERO, BRETT, VIRTUAL)..."
-                    className="font-mono text-xs"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="sm:col-span-2 flex flex-col gap-1">
+                    <label className="text-[10px] text-muted-foreground uppercase">Recipient Address (0x):</label>
+                    <Input
+                      value={transferRecipient}
+                      onChange={(e) => setTransferRecipient(e.target.value)}
+                      className="font-mono text-xs"
+                      placeholder="0x..."
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-muted-foreground uppercase">Amount (ETH):</label>
+                    <Input
+                      value={transferAmount}
+                      onChange={(e) => setTransferAmount(e.target.value)}
+                      className="font-mono text-xs"
+                      placeholder="0.0001"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 mt-1">
                   <Button
-                    onClick={() => {
-                      const el = document.getElementById("dex-search-input") as HTMLInputElement;
-                      if (el?.value) send(`Search real-time DEX liquidity and 24h volume for ${el.value}`);
-                      setActiveTab("chat");
-                    }}
+                    onClick={handleOnChainTransfer}
+                    disabled={transferring}
                     className="font-mono text-xs uppercase"
                   >
-                    Query in Agent Console
+                    <Send className="size-3.5 mr-1.5" /> {transferring ? "Broadcasting to Base Sepolia..." : "Broadcast Transfer"}
+                  </Button>
+                  <span className="text-[11px] text-muted-foreground">Network: Base Sepolia (84532)</span>
+                </div>
+
+                {transferStatus && (
+                  <div
+                    className={cn(
+                      "mt-2 border p-3 font-mono text-xs",
+                      transferStatus.success
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border bg-muted/30 text-muted-foreground"
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-1.5 font-bold">
+                      <span className={transferStatus.success ? "text-primary" : "text-foreground"}>
+                        {transferStatus.success ? "TRANSACTION CONFIRMED ON-CHAIN" : "PRE-FLIGHT SIMULATION"}
+                      </span>
+                      <span>{transferStatus.amountEth}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">{transferStatus.message}</p>
+                    {transferStatus.hash && (
+                      <div className="mt-2 flex items-center justify-between border-t border-border pt-1.5 text-[11px]">
+                        <span className="truncate">Hash: {transferStatus.hash}</span>
+                        {transferStatus.success && (
+                          <a
+                            href={transferStatus.explorerUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-primary underline ml-2 shrink-0 inline-flex items-center gap-1"
+                          >
+                            BaseScan <ExternalLink className="size-3" />
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Action 2: On-Chain Proof-of-Audit Attestation */}
+            <Card className="border-border">
+              <CardHeader className="border-b border-border/80">
+                <SectionTitle num="03" title="Publish Proof-of-Audit Attestation Directly On-Chain" />
+              </CardHeader>
+              <CardContent className="pt-4 flex flex-col gap-3 font-mono text-xs">
+                <p className="text-muted-foreground text-[11px] leading-relaxed">
+                  Writes audit findings and cryptographic hashes directly into Base Sepolia calldata, creating an immutable blockchain record.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-muted-foreground uppercase">Audit Title:</label>
+                    <Input
+                      value={attestTitle}
+                      onChange={(e) => setAttestTitle(e.target.value)}
+                      className="font-mono text-xs"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-[10px] text-muted-foreground uppercase">Audited Contract Address:</label>
+                    <Input
+                      value={attestTarget}
+                      onChange={(e) => setAttestTarget(e.target.value)}
+                      className="font-mono text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] text-muted-foreground uppercase">Summary Finding (Calldata Payload):</label>
+                  <Input
+                    value={attestSummary}
+                    onChange={(e) => setAttestSummary(e.target.value)}
+                    className="font-mono text-xs"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3 mt-1">
+                  <Button
+                    onClick={handleOnChainAttest}
+                    disabled={attesting}
+                    className="font-mono text-xs uppercase"
+                  >
+                    <FileCheck2 className="size-3.5 mr-1.5" /> {attesting ? "Writing to Blockchain..." : "Notarize On-Chain"}
                   </Button>
                 </div>
+
+                {attestStatus && (
+                  <div
+                    className={cn(
+                      "mt-2 border p-3 font-mono text-xs",
+                      attestStatus.success
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border bg-muted/30 text-muted-foreground"
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-1.5 font-bold">
+                      <span className={attestStatus.success ? "text-primary" : "text-foreground"}>
+                        {attestStatus.success ? "ATTESTATION NOTARIZED ON BASE SEPOLIA" : "ATTESTATION ENCODED"}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">{attestStatus.message}</p>
+                    {attestStatus.hash && (
+                      <div className="mt-2 flex items-center justify-between border-t border-border pt-1.5 text-[11px]">
+                        <span className="truncate">Tx: {attestStatus.hash}</span>
+                        {attestStatus.success && (
+                          <a
+                            href={attestStatus.explorerUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-primary underline ml-2 shrink-0 inline-flex items-center gap-1"
+                          >
+                            BaseScan <ExternalLink className="size-3" />
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
 
-          {/* Right: Treasury Details */}
+          {/* Right Column: Base Sepolia Node Telemetry & Bytecode Inspector */}
           <aside className="flex flex-col gap-6">
+            {/* Live Node Metrics */}
             <Card className="border-border">
               <CardHeader className="border-b border-border/80">
-                <SectionTitle num="03" title="Treasury Management" />
-              </CardHeader>
-              <CardContent className="pt-4">
-                {wallet?.address ? (
-                  <WalletDetails wallet={wallet} onRefresh={loadWallet} onExportKey={fetchPrivateKey} />
-                ) : (
-                  <Button onClick={createWallet} disabled={creating} className="w-full font-mono text-xs uppercase">
-                    Generate Treasury Wallet
+                <div className="flex items-center justify-between">
+                  <SectionTitle num="04" title="Base Sepolia Node RPC" />
+                  <Button variant="ghost" size="sm" onClick={loadTelemetry} className="font-mono text-xs uppercase">
+                    <RefreshCw className="size-3" />
                   </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4 flex flex-col gap-3 font-mono">
+                <div className="border border-border bg-muted/30 p-3">
+                  <span className="text-[10px] text-muted-foreground uppercase block">Block Height</span>
+                  <span className="text-xl font-black text-primary">#{telemetry?.blockNumber || "48,034,700"}</span>
+                </div>
+                <div className="border border-border bg-muted/30 p-3">
+                  <span className="text-[10px] text-muted-foreground uppercase block">Gas Price</span>
+                  <span className="text-xl font-black text-foreground">{telemetry?.gasPriceGwei || "0.0050 Gwei"}</span>
+                </div>
+                <div className="border border-border bg-muted/30 p-3">
+                  <span className="text-[10px] text-muted-foreground uppercase block">RPC Latency</span>
+                  <span className="text-xl font-black text-primary">{telemetry?.latencyMs ?? 75} ms</span>
+                </div>
+                <div className="border border-border bg-muted/30 p-3">
+                  <span className="text-[10px] text-muted-foreground uppercase block">Agent Transaction Nonce</span>
+                  <span className="text-xl font-black text-foreground">{telemetry?.agentTransactions ?? 0}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* On-Chain Bytecode Inspector */}
+            <Card className="border-border">
+              <CardHeader className="border-b border-border/80">
+                <SectionTitle num="05" title="On-Chain Bytecode Inspector" />
+              </CardHeader>
+              <CardContent className="pt-4 flex flex-col gap-3 font-mono text-xs">
+                <Input
+                  value={bytecodeInput}
+                  onChange={(e) => setBytecodeInput(e.target.value)}
+                  placeholder="0x contract address..."
+                  className="font-mono text-xs"
+                />
+                <Button
+                  onClick={handleInspectBytecode}
+                  disabled={inspectingBytecode}
+                  className="font-mono text-xs uppercase"
+                >
+                  <Search className="size-3.5 mr-1" /> {inspectingBytecode ? "Reading Node..." : "Inspect On-Chain"}
+                </Button>
+
+                {bytecodeData && (
+                  <div className="border border-border bg-muted/30 p-3 text-[11px] flex flex-col gap-1.5">
+                    <div>Type: <strong className="text-foreground">{bytecodeData.accountType}</strong></div>
+                    <div>Bytecode Size: <strong className="text-primary">{bytecodeData.bytecodeSize}</strong></div>
+                    <div>Balance: <strong className="text-foreground">{bytecodeData.onChainBalance}</strong></div>
+                    <div>Nonce: <strong className="text-foreground">{bytecodeData.nonce}</strong></div>
+                    <a
+                      href={bytecodeData.explorerUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-primary underline inline-flex items-center gap-1 mt-1"
+                    >
+                      View on BaseScan <ExternalLink className="size-3" />
+                    </a>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -1001,7 +1396,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* TAB 4: INTERACTIVE DEMO & WALKTHROUGH GUIDE (Week 2 Core Requirement) */}
+      {/* TAB 4: INTERACTIVE DEMO & WALKTHROUGH GUIDE (WEEK 3 UPDATE) */}
       {activeTab === "demo" && (
         <div className="grid flex-1 gap-6 lg:grid-cols-[1fr_400px]">
           {/* Main Demo Stage */}
@@ -1009,8 +1404,8 @@ export default function Home() {
             <CardHeader className="border-b border-border/80">
               <div className="flex items-center justify-between">
                 <div>
-                  <SectionTitle num="01" title="Interactive Agent Walkthrough Player" />
-                  <h2 className="text-xl font-bold uppercase mt-1">AgentMAXX Capability Demonstration</h2>
+                  <SectionTitle num="01" title="Interactive Crypto Capability Demonstration" />
+                  <h2 className="text-xl font-bold uppercase mt-1">Week 3: Give It A Wallet Walkthrough</h2>
                 </div>
                 <Button
                   onClick={startInteractiveDemo}
@@ -1032,12 +1427,12 @@ export default function Home() {
                   )}
                 >
                   <div className="flex items-center justify-between text-[11px] mb-2">
-                    <span className="font-bold text-primary">ACT 1: AUTONOMOUS FINANCIAL AGENCY</span>
+                    <span className="font-bold text-primary">ACT 1: WALLET INITIALIZATION & BASE SEPOLIA</span>
                     {demoStep === 1 && <span className="animate-pulse text-primary font-bold">● ACTIVE</span>}
                   </div>
-                  <h3 className="font-bold text-sm text-foreground mb-1">Self-Governed Base Sepolia Treasury</h3>
+                  <h3 className="font-bold text-sm text-foreground mb-1">Autonomous Cryptographic Keypair</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Traditional chatbots rely on human credit cards or API keys. AgentMAXX owns a cryptographic wallet keypair on Base Sepolia. It maintains its own reserve, signs on-chain EIP-191 digests, and executes transactions independently.
+                    AgentMAXX generates and persists an Ethereum keypair on Base Sepolia (Chain ID 84532). It acts as an autonomous treasury capable of signing digests and managing balances without human custody.
                   </p>
                 </div>
 
@@ -1049,12 +1444,12 @@ export default function Home() {
                   )}
                 >
                   <div className="flex items-center justify-between text-[11px] mb-2">
-                    <span className="font-bold text-primary">ACT 2: THE x402 MICROPAYMENT HANDSHAKE</span>
+                    <span className="font-bold text-primary">ACT 2: LIVE ON-CHAIN TRANSACTIONS & PAYMENTS</span>
                     {demoStep === 2 && <span className="animate-pulse text-primary font-bold">● ACTIVE</span>}
                   </div>
-                  <h3 className="font-bold text-sm text-foreground mb-1">Machine-to-Machine Micro-Commerce</h3>
+                  <h3 className="font-bold text-sm text-foreground mb-1">Real ETH Transfers on Base Sepolia</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    When querying premium APIs (such as market sentiment or quantitative alpha), the server responds with HTTP 402 Payment Required. AgentMAXX catches the invoice, signs the exact nonce using ECDSA, submits the X-PAYMENT header, and unseals the data in milliseconds.
+                    Equipped with Viem WalletClient, AgentMAXX signs and broadcasts live on-chain ETH transactions to any 0x destination address, monitors confirmations on BaseScan, and records verified execution hashes.
                   </p>
                 </div>
 
@@ -1066,12 +1461,12 @@ export default function Home() {
                   )}
                 >
                   <div className="flex items-center justify-between text-[11px] mb-2">
-                    <span className="font-bold text-primary">ACT 3: MULTI-STAGE AGENTIC WORKFLOWS</span>
+                    <span className="font-bold text-primary">ACT 3: PROOF-OF-AUDIT ON-CHAIN ATTESTATION</span>
                     {demoStep === 3 && <span className="animate-pulse text-primary font-bold">● ACTIVE</span>}
                   </div>
-                  <h3 className="font-bold text-sm text-foreground mb-1">Week 2 Innovation: Chained Pipelines</h3>
+                  <h3 className="font-bold text-sm text-foreground mb-1">Writing Proofs into Blockchain Calldata</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Rather than single-turn chats, AgentMAXX now chains sequential tools: pulling real-time DexScreener DEX liquidity $\rightarrow$ running automated contract security audits $\rightarrow$ paying for quantitative alpha $\rightarrow$ synthesizing an institutional Due Diligence Dossier.
+                    Following smart contract bytecode audits, AgentMAXX encodes the finding digest and contract address into transaction calldata, notarizing the audit permanently onto the Base Sepolia blockchain.
                   </p>
                 </div>
 
@@ -1083,12 +1478,12 @@ export default function Home() {
                   )}
                 >
                   <div className="flex items-center justify-between text-[11px] mb-2">
-                    <span className="font-bold text-primary">ACT 4: LIVE ON-CHAIN TELEMETRY</span>
+                    <span className="font-bold text-primary">ACT 4: DUAL-WALLET ARCHITECTURE & x402</span>
                     {demoStep === 4 && <span className="animate-pulse text-primary font-bold">● ACTIVE</span>}
                   </div>
-                  <h3 className="font-bold text-sm text-foreground mb-1">Real Base Sepolia Node Synchronization</h3>
+                  <h3 className="font-bold text-sm text-foreground mb-1">Connecting User Web3 Wallet with Agent Treasury</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Synchronized with live Base Sepolia blocks #{telemetry?.blockNumber || "48,034,500"}, tracking live gas fees in Gwei, latency metrics, and nonces via public Viem RPC clients.
+                    Users can connect their browser wallet (MetaMask / Coinbase) to 1-click fund the agent treasury, while the agent continues executing machine-to-machine x402 micropayments automatically.
                   </p>
                 </div>
               </div>
@@ -1104,40 +1499,42 @@ export default function Home() {
               <CardContent className="flex flex-col gap-2.5 pt-4 font-mono text-xs">
                 <Button
                   onClick={() => {
+                    setActiveTab("crypto");
+                  }}
+                  variant="outline"
+                  className="w-full justify-start text-xs uppercase"
+                >
+                  <Coins className="size-3.5 mr-2 text-primary" /> Test Crypto Hub & Transfers
+                </Button>
+                <Button
+                  onClick={() => {
                     setActiveTab("workflows");
-                    setSelectedWorkflow("due_diligence_pipeline");
+                    setSelectedWorkflow("onchain_notarization_pipeline");
                   }}
                   variant="outline"
                   className="w-full justify-start text-xs uppercase"
                 >
-                  <Layers className="size-3.5 mr-2 text-primary" /> Test Token Due Diligence
+                  <FileCheck2 className="size-3.5 mr-2 text-primary" /> Run On-Chain Attestation Pipeline
                 </Button>
                 <Button
                   onClick={() => {
                     setActiveTab("chat");
-                    send("Search real-time DEX liquidity and 24h volume for AERO on Base");
+                    send("Execute an on-chain transfer of 0.0001 Base Sepolia ETH to 0x000000000000000000000000000000000000dEaD");
                   }}
                   variant="outline"
                   className="w-full justify-start text-xs uppercase"
                 >
-                  <Search className="size-3.5 mr-2 text-primary" /> Test Live DexScreener Tool
+                  <Send className="size-3.5 mr-2 text-primary" /> Test On-Chain ETH Transfer Tool
                 </Button>
                 <Button
                   onClick={() => {
                     setActiveTab("chat");
-                    send("Provide institutional crypto market intelligence on sentiment and narratives");
+                    send("Publish an on-chain Proof-of-Audit attestation for Aerodrome Finance on Base Sepolia");
                   }}
                   variant="outline"
                   className="w-full justify-start text-xs uppercase"
                 >
-                  <Receipt className="size-3.5 mr-2 text-primary" /> Test 0.05 USDC x402 Payment
-                </Button>
-                <Button
-                  onClick={() => setActiveTab("telemetry")}
-                  variant="outline"
-                  className="w-full justify-start text-xs uppercase"
-                >
-                  <Activity className="size-3.5 mr-2 text-primary" /> Inspect Live Base Sepolia RPC
+                  <Receipt className="size-3.5 mr-2 text-primary" /> Test On-Chain Attestation Tool
                 </Button>
               </CardContent>
             </Card>
@@ -1145,7 +1542,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Week 2 Submission Brief Modal */}
+      {/* Week 3 Submission Package Modal */}
       {showSubmissionModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="relative max-h-[92vh] w-full max-w-2xl overflow-y-auto border border-border bg-card p-6 shadow-2xl">
@@ -1157,13 +1554,13 @@ export default function Home() {
             </button>
 
             <div className="flex items-center gap-2 text-primary font-mono text-xs font-bold uppercase mb-2">
-              <Award className="size-4" /> Agentmaxxing Week 2: Build & Ship
+              <Award className="size-4" /> Agentmaxxing Week 3: Give It A Wallet
             </div>
-            <h2 className="text-2xl font-bold uppercase tracking-tight">Week 2 Submission Package</h2>
+            <h2 className="text-2xl font-bold uppercase tracking-tight">Week 3 Submission Package</h2>
 
             <div className="mt-4 flex flex-col gap-4 text-xs text-muted-foreground leading-relaxed">
               <div className="border border-border/80 bg-muted/40 p-3">
-                <span className="font-bold text-foreground block font-mono mb-1">1. WORKING AI AGENT LINK</span>
+                <span className="font-bold text-foreground block font-mono mb-1">1. WORKING CRYPTO-ENABLED AGENT LINK</span>
                 <a
                   href="https://agent-maxx.vercel.app/"
                   target="_blank"
@@ -1187,19 +1584,20 @@ export default function Home() {
               </div>
 
               <div className="border border-border/80 bg-muted/40 p-3">
-                <span className="font-bold text-foreground block font-mono mb-1">3. WHAT WE BUILT IN WEEK 2 (NEW CAPABILITIES)</span>
+                <span className="font-bold text-foreground block font-mono mb-1">3. WHAT WE BUILT IN WEEK 3 (CRYPTO CAPABILITIES)</span>
                 <ul className="list-disc pl-4 space-y-1.5">
-                  <li><strong>Autonomous Agentic Workflows Engine:</strong> Built sequential execution pipelines that chain DexScreener DEX lookups, bytecode vulnerability audits, and x402 quantitative alpha into comprehensive institutional Due Diligence Dossiers.</li>
-                  <li><strong>Live External Service Integrations:</strong> Integrated live DexScreener API for real-time DEX liquidity/volume and live Base Sepolia RPC node synchronization for gas tracking.</li>
-                  <li><strong>Multi-Agent Persona Profiles:</strong> Added runtime persona toggling (Institutional Executive, Alpha Hunter, Security Auditor) with customized cognitive instructions.</li>
-                  <li><strong>Interactive Walkthrough Player:</strong> Built an in-app interactive walkthrough guide with 4 demonstration acts for competition judges.</li>
+                  <li><strong>Real On-Chain Base Sepolia Transactions:</strong> Equipped AgentMAXX with Viem WalletClient to sign and broadcast live ETH transfers, monitor transaction receipts, and link directly to BaseScan.</li>
+                  <li><strong>Proof-of-Audit On-Chain Attestation:</strong> Enabled the agent to notarize security audits on-chain by encoding cryptographic report digests into transaction calldata.</li>
+                  <li><strong>Dual-Wallet Web3 Architecture:</strong> Connected user browser wallets (MetaMask / Coinbase) to allow 1-click funding of the agent treasury on Base Sepolia.</li>
+                  <li><strong>On-Chain Bytecode Inspector:</strong> Live RPC bytecode analysis to verify contract deployment and account type.</li>
+                  <li><strong>Autonomous x402 Micropayments:</strong> Retained multi-resource HTTP 402 signature verification for machine-to-machine APIs.</li>
                 </ul>
               </div>
 
               <div className="border border-border/80 bg-muted/40 p-3">
                 <span className="font-bold text-foreground block font-mono mb-1">4. DEMO & WALKTHROUGH NOTE</span>
                 <p>
-                  Judges can use the in-app &ldquo;04. Demo & Walkthrough Guide&rdquo; tab to run guided demonstrations, or execute the pre-configured workflow pipelines in &ldquo;02. Agentic Workflows&rdquo; with 1 click.
+                  Judges can use the in-app &ldquo;03. Crypto & On-Chain Hub&rdquo; to test transfers and attestations, or run &ldquo;04. Demo & Walkthrough Guide&rdquo; for a guided interactive walkthrough.
                 </p>
               </div>
             </div>
@@ -1260,10 +1658,6 @@ function SectionTitle({ num, title }: { num: string; title: string }) {
       <span className="ml-3 text-muted-foreground">{title}</span>
     </p>
   );
-}
-
-function Code({ children }: { children: React.ReactNode }) {
-  return <code className="bg-muted px-1 py-0.5 font-mono text-[0.85em] text-foreground">{children}</code>;
 }
 
 function SetupStep(props: { number: number; title: string; done: boolean; last?: boolean; children: React.ReactNode }) {
@@ -1352,6 +1746,7 @@ function WalletDetails({
 
 function ToolCall({ step }: { step: Step }) {
   const payment = step.result?.payment;
+  const isTx = step.result?.type === "transfer" || step.result?.type === "attestation";
   return (
     <Collapsible className="border border-border font-mono text-xs bg-muted/20">
       <CollapsibleTrigger className="group flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted/60">
@@ -1361,6 +1756,11 @@ function ToolCall({ step }: { step: Step }) {
         {payment && (
           <Badge className="ml-auto bg-blue font-mono text-foreground uppercase text-[10px] flex items-center gap-1">
             <Receipt className="size-3" /> x402 Paid {payment.amount}
+          </Badge>
+        )}
+        {isTx && (
+          <Badge className="ml-auto bg-primary/20 text-primary border border-primary/40 font-mono text-[10px] flex items-center gap-1">
+            <Coins className="size-3" /> ON-CHAIN TX
           </Badge>
         )}
         {step.error && <Badge variant="destructive" className="ml-auto font-mono uppercase text-[10px]">Failed</Badge>}
@@ -1382,6 +1782,37 @@ function ToolCall({ step }: { step: Step }) {
               <div className="mt-2 border-t border-border/40 pt-1.5">
                 <span className="text-muted-foreground block text-[10px]">EIP-191 SIGNATURE:</span>
                 <span className="text-foreground text-[10px] break-all">{payment.signatureFull}</span>
+              </div>
+            )}
+          </div>
+        )}
+        {isTx && (
+          <div className="border border-primary/40 bg-primary/10 p-2.5 font-mono text-[11px]">
+            <div className="flex items-center justify-between text-primary font-bold mb-1.5">
+              <span>BASE SEPOLIA ON-CHAIN TRANSACTION</span>
+              <span className="text-[10px] bg-primary/20 px-1 py-0.5 text-primary">
+                {step.result?.success ? "MINED / VERIFIED" : "PRE-FLIGHT SIMULATION"}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-muted-foreground">
+              <div>Action: <strong className="text-foreground">{step.result?.type}</strong></div>
+              <div>Amount: <strong className="text-foreground">{step.result?.amountEth}</strong></div>
+              <div>Recipient: <strong className="text-foreground truncate">{step.result?.to}</strong></div>
+              <div>Network: <strong className="text-foreground">{step.result?.network}</strong></div>
+            </div>
+            {step.result?.hash && (
+              <div className="mt-2 border-t border-border/40 pt-1.5 flex items-center justify-between">
+                <span className="text-foreground text-[10px] truncate">Tx: {step.result?.hash}</span>
+                {step.result?.explorerUrl && (
+                  <a
+                    href={step.result?.explorerUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary underline text-[10px] shrink-0 inline-flex items-center gap-1"
+                  >
+                    BaseScan <ExternalLink className="size-3" />
+                  </a>
+                )}
               </div>
             )}
           </div>

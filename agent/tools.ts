@@ -1,18 +1,29 @@
 /**
- * AGENTMAXX TOOL ARSENAL
+ * AGENTMAXX TOOL ARSENAL (WEEK 3: CRYPTO & ON-CHAIN EDITION)
  *
  * Each tool is a typed capability that Gemini can invoke autonomously.
  * Includes:
  *  - Autonomous x402 Micropayment Tools (signed with agent's private key)
- *  - Free Utility & Financial Research Tools
- *  - Real-time DexScreener Live DEX Queries
- *  - Live Base Sepolia RPC Chain Telemetry
+ *  - Real On-Chain ETH Transfers & Tip Disbursal on Base Sepolia (Week 3)
+ *  - Real On-Chain Proof-of-Audit Attestation Recording (Week 3)
+ *  - On-Chain Bytecode & Account Verification (Week 3)
+ *  - DexScreener Live DEX Queries
+ *  - Live Base Sepolia RPC Telemetry
+ *  - Free Financial & Utility Tools
  */
-import { getChainTelemetry, getWalletAddress, getWalletBalance, payAndFetch } from "./wallet";
+import {
+  getChainTelemetry,
+  getWalletAddress,
+  getWalletBalance,
+  payAndFetch,
+  publishOnChainAttestation,
+  sendOnChainPayment,
+  verifyContractBytecode,
+} from "./wallet";
 
 export type Tool = {
   name: string;
-  category: "x402-paid" | "free-utility";
+  category: "x402-paid" | "free-utility" | "onchain-action";
   cost?: string;
   description: string;
   /** JSON Schema describing inputs */
@@ -22,6 +33,70 @@ export type Tool = {
 };
 
 export const tools: Tool[] = [
+  // ─── WEEK 3: ON-CHAIN TRANSACTIONS & CRYPTO CAPABILITIES ───
+
+  {
+    name: "send_onchain_payment",
+    category: "onchain-action",
+    cost: "Gas + Amount (Base Sepolia ETH)",
+    description:
+      "Execute a live on-chain ETH transfer on Base Sepolia testnet from the agent's wallet to any destination 0x address. Broadcasts transaction, waits for receipt, and generates a BaseScan transaction explorer link.",
+    parameters: {
+      type: "object",
+      properties: {
+        toAddress: {
+          type: "string",
+          description: "Recipient Ethereum/Base 0x address",
+        },
+        amountEth: {
+          type: "string",
+          description: "Amount of Base Sepolia ETH to transfer (e.g. '0.0001')",
+        },
+      },
+      required: ["toAddress"],
+    },
+    run: async ({ toAddress, amountEth = "0.0001" }) => {
+      return sendOnChainPayment(toAddress, amountEth);
+    },
+  },
+
+  {
+    name: "publish_audit_attestation",
+    category: "onchain-action",
+    cost: "Gas only (Base Sepolia)",
+    description:
+      "Publish an immutable on-chain Proof-of-Audit attestation directly to Base Sepolia. Encodes the audit summary and target address into the transaction calldata, notarizing the report on the blockchain.",
+    parameters: {
+      type: "object",
+      properties: {
+        auditTitle: { type: "string", description: "Title of the audit or finding" },
+        dossierSummary: { type: "string", description: "Brief executive finding to notarize on-chain" },
+        targetAddress: { type: "string", description: "Contract address audited" },
+      },
+      required: ["auditTitle", "dossierSummary"],
+    },
+    run: async ({ auditTitle, dossierSummary, targetAddress }) => {
+      return publishOnChainAttestation(auditTitle, dossierSummary, targetAddress);
+    },
+  },
+
+  {
+    name: "verify_contract_onchain",
+    category: "onchain-action",
+    description:
+      "Query live Base Sepolia RPC to inspect an address's deployed bytecode, verify whether it is a Smart Contract or an EOA, and check its on-chain balance and nonce.",
+    parameters: {
+      type: "object",
+      properties: {
+        address: { type: "string", description: "Ethereum 0x address to inspect on Base Sepolia" },
+      },
+      required: ["address"],
+    },
+    run: async ({ address }) => {
+      return verifyContractBytecode(address);
+    },
+  },
+
   // ─── x402 PAID APIS (Autonomous Cryptographic Micropayments) ───
 
   {
@@ -102,7 +177,7 @@ export const tools: Tool[] = [
     },
   },
 
-  // ─── LIVE EXTERNAL DEX & ON-CHAIN TOOLS (Week 2 Additions) ───
+  // ─── LIVE EXTERNAL DEX & ON-CHAIN TOOLS ───
 
   {
     name: "search_dex_pairs",
@@ -145,7 +220,7 @@ export const tools: Tool[] = [
           };
         }
       } catch (err) {
-        // Fallback gracefully
+        // Fallback
       }
       return {
         query,
