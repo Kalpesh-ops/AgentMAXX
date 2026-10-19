@@ -1419,6 +1419,28 @@ export default function Home() {
 
             <ScrollArea className="flex-1 p-6">
               <div className="flex flex-col gap-6 max-w-3xl">
+                {/* 20-Second Launch Video Player (Generated with latent-spaces/brag) */}
+                <div className="border border-primary/40 bg-muted/20 p-4 rounded-lg flex flex-col gap-3 shadow-lg">
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <span className="text-primary font-bold flex items-center gap-2">
+                      <Play className="size-3.5 fill-primary" /> OFFICIAL LAUNCH VIDEO (brag.mp4)
+                    </span>
+                    <span className="text-muted-foreground">Generated via latent-spaces/brag · 20s · 1080p</span>
+                  </div>
+                  <div className="aspect-video w-full rounded overflow-hidden bg-black border border-border shadow-2xl relative">
+                    <video
+                      controls
+                      playsInline
+                      preload="metadata"
+                      poster="/brag.jpg"
+                      className="w-full h-full object-cover"
+                    >
+                      <source src="/brag.mp4" type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                </div>
+
                 {/* Demo Act 1 */}
                 <div
                   className={cn(
