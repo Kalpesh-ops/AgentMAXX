@@ -33,6 +33,7 @@ export async function GET(req: Request) {
     network: "Base Sepolia (84532)",
     explorerUrl: `https://sepolia.basescan.org/address/${address}`,
     faucetUrl: "https://faucets.chain.link/base-sepolia",
+    isConfigured: Boolean(process.env.WALLET_PRIVATE_KEY),
     ...(showKey ? { privateKey: getPrivateKey() } : {}),
   });
 }

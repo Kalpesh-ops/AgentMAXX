@@ -115,9 +115,19 @@ export function loadAccount() {
   }
 
   // 1. Env variable takes highest precedence
-  if (process.env.WALLET_PRIVATE_KEY && process.env.WALLET_PRIVATE_KEY.startsWith("0x")) {
-    inMemoryKey = process.env.WALLET_PRIVATE_KEY as Hex;
-    return privateKeyToAccount(inMemoryKey);
+  let envKey = process.env.WALLET_PRIVATE_KEY?.trim();
+  if (envKey) {
+    // Strip surrounding quotes if user copied them
+    if ((envKey.startsWith('"') && envKey.endsWith('"')) || (envKey.startsWith("'") && envKey.endsWith("'"))) {
+      envKey = envKey.slice(1, -1).trim();
+    }
+    if (!envKey.startsWith("0x")) {
+      envKey = `0x${envKey}`;
+    }
+    if (envKey.length === 66) {
+      inMemoryKey = envKey as Hex;
+      return privateKeyToAccount(inMemoryKey);
+    }
   }
 
   // 2. Local cwd file (gitignored, created on local run)
