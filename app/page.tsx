@@ -105,17 +105,17 @@ const PRESET_PROMPTS = [
     type: "crypto",
   },
   {
-    label: "📊 Market Intel (0.05 USDC)",
+    label: "📊 Market Intel (0.00005 ETH)",
     prompt: "Provide institutional crypto market intelligence on sentiment, Fear & Greed index, and trending narratives.",
     type: "paid",
   },
   {
-    label: "⚡ BTC Alpha (0.02 USDC)",
+    label: "⚡ BTC Alpha (0.00002 ETH)",
     prompt: "Give me deep quantitative alpha and on-chain whale metrics for BTC.",
     type: "paid",
   },
   {
-    label: "🛡️ Contract Audit (0.03 USDC)",
+    label: "🛡️ Contract Audit (0.00003 ETH)",
     prompt: "Audit smart contract 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984 for security risks.",
     type: "paid",
   },
@@ -1036,9 +1036,29 @@ export default function Home() {
                         <CollapsibleContent className="border-t border-border p-3 bg-background">
                           {sr.payment && (
                             <div className="mb-2 border border-blue/40 bg-blue/10 p-2 text-[11px]">
-                              <p className="font-bold text-primary mb-1">x402 Verified Payment Receipt</p>
-                              <p className="text-muted-foreground">Recipient: {sr.payment.to}</p>
-                              <p className="text-muted-foreground truncate">Signature: {sr.payment.signatureFull}</p>
+                              <div className="flex items-center justify-between mb-1">
+                                <p className="font-bold text-primary">x402 On-Chain Settlement Receipt</p>
+                                <span className="text-[10px] bg-primary/20 px-1 py-0.5 text-primary font-bold">
+                                  {sr.payment.txHash ? "MINED ON-CHAIN" : "VERIFIED"}
+                                </span>
+                              </div>
+                              <p className="text-muted-foreground">Amount: <strong className="text-foreground">{sr.payment.amount}</strong></p>
+                              <p className="text-muted-foreground truncate">Recipient: <strong className="text-foreground">{sr.payment.to}</strong></p>
+                              {sr.payment.txHash && (
+                                <div className="mt-1.5 pt-1.5 border-t border-border/40 flex items-center justify-between">
+                                  <span className="text-foreground text-[10px] truncate">Tx: {sr.payment.txHash}</span>
+                                  {sr.payment.explorerUrl && (
+                                    <a
+                                      href={sr.payment.explorerUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-primary underline ml-2 shrink-0 inline-flex items-center gap-1 font-bold"
+                                    >
+                                      BaseScan <ExternalLink className="size-3" />
+                                    </a>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           )}
                           <pre className="max-h-48 overflow-x-auto bg-muted/40 p-2 text-[11px] text-foreground">
@@ -1213,25 +1233,23 @@ export default function Home() {
                     )}
                   >
                     <div className="flex items-center justify-between mb-1.5 font-bold">
-                      <span className={transferStatus.success ? "text-primary" : "text-foreground"}>
-                        {transferStatus.success ? "TRANSACTION CONFIRMED ON-CHAIN" : "PRE-FLIGHT SIMULATION"}
+                      <span className={transferStatus.success ? "text-primary" : "text-destructive"}>
+                        {transferStatus.success ? "TRANSACTION CONFIRMED ON-CHAIN" : "INSUFFICIENT BALANCE / ACTION HALTED"}
                       </span>
                       <span>{transferStatus.amountEth}</span>
                     </div>
                     <p className="text-[11px] text-muted-foreground">{transferStatus.message}</p>
-                    {transferStatus.hash && (
+                    {transferStatus.hash && transferStatus.success && (
                       <div className="mt-2 flex items-center justify-between border-t border-border pt-1.5 text-[11px]">
                         <span className="truncate">Hash: {transferStatus.hash}</span>
-                        {transferStatus.success && (
-                          <a
-                            href={transferStatus.explorerUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-primary underline ml-2 shrink-0 inline-flex items-center gap-1"
-                          >
-                            BaseScan <ExternalLink className="size-3" />
-                          </a>
-                        )}
+                        <a
+                          href={transferStatus.explorerUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary underline ml-2 shrink-0 inline-flex items-center gap-1 font-bold"
+                        >
+                          BaseScan <ExternalLink className="size-3" />
+                        </a>
                       </div>
                     )}
                   </div>
@@ -1296,24 +1314,22 @@ export default function Home() {
                     )}
                   >
                     <div className="flex items-center justify-between mb-1.5 font-bold">
-                      <span className={attestStatus.success ? "text-primary" : "text-foreground"}>
-                        {attestStatus.success ? "ATTESTATION NOTARIZED ON BASE SEPOLIA" : "ATTESTATION ENCODED"}
+                      <span className={attestStatus.success ? "text-primary" : "text-destructive"}>
+                        {attestStatus.success ? "ATTESTATION NOTARIZED ON BASE SEPOLIA" : "INSUFFICIENT BALANCE / ACTION HALTED"}
                       </span>
                     </div>
                     <p className="text-[11px] text-muted-foreground">{attestStatus.message}</p>
-                    {attestStatus.hash && (
+                    {attestStatus.hash && attestStatus.success && (
                       <div className="mt-2 flex items-center justify-between border-t border-border pt-1.5 text-[11px]">
                         <span className="truncate">Tx: {attestStatus.hash}</span>
-                        {attestStatus.success && (
-                          <a
-                            href={attestStatus.explorerUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-primary underline ml-2 shrink-0 inline-flex items-center gap-1"
-                          >
-                            BaseScan <ExternalLink className="size-3" />
-                          </a>
-                        )}
+                        <a
+                          href={attestStatus.explorerUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary underline ml-2 shrink-0 inline-flex items-center gap-1 font-bold"
+                        >
+                          BaseScan <ExternalLink className="size-3" />
+                        </a>
                       </div>
                     )}
                   </div>
@@ -1791,16 +1807,33 @@ function ToolCall({ step }: { step: Step }) {
         {payment && (
           <div className="border border-blue/40 bg-blue/10 p-2.5 font-mono text-[11px]">
             <div className="flex items-center justify-between text-primary font-bold mb-1.5">
-              <span>x402 CRYPTOGRAPHIC RECEIPT</span>
-              <span className="text-[10px] bg-primary/20 px-1 py-0.5 text-primary">VERIFIED (200 OK)</span>
+              <span>{payment.txHash ? "x402 ON-CHAIN SETTLEMENT RECEIPT" : "x402 CRYPTOGRAPHIC RECEIPT"}</span>
+              <span className="text-[10px] bg-primary/20 px-1 py-0.5 text-primary">
+                {payment.txHash ? "MINED ON BASE SEPOLIA" : "VERIFIED (200 OK)"}
+              </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-muted-foreground">
               <div>Amount: <strong className="text-foreground">{payment.amount}</strong></div>
               <div>Recipient: <strong className="text-foreground truncate">{payment.to}</strong></div>
               <div>Endpoint: <strong className="text-foreground">{payment.resource}</strong></div>
-              <div>Nonce: <strong className="text-foreground">{payment.nonce?.slice(0, 12)}...</strong></div>
+              {payment.blockNumber && <div>Block: <strong className="text-foreground">{payment.blockNumber}</strong></div>}
             </div>
-            {payment.signatureFull && (
+            {payment.txHash && (
+              <div className="mt-2 border-t border-border/40 pt-1.5 flex items-center justify-between">
+                <span className="text-foreground text-[10px] truncate">Tx: {payment.txHash}</span>
+                {payment.explorerUrl && (
+                  <a
+                    href={payment.explorerUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-primary underline text-[10px] shrink-0 inline-flex items-center gap-1 font-bold"
+                  >
+                    BaseScan <ExternalLink className="size-3" />
+                  </a>
+                )}
+              </div>
+            )}
+            {payment.signatureFull && !payment.txHash && (
               <div className="mt-2 border-t border-border/40 pt-1.5">
                 <span className="text-muted-foreground block text-[10px]">EIP-191 SIGNATURE:</span>
                 <span className="text-foreground text-[10px] break-all">{payment.signatureFull}</span>
@@ -1813,7 +1846,7 @@ function ToolCall({ step }: { step: Step }) {
             <div className="flex items-center justify-between text-primary font-bold mb-1.5">
               <span>BASE SEPOLIA ON-CHAIN TRANSACTION</span>
               <span className="text-[10px] bg-primary/20 px-1 py-0.5 text-primary">
-                {step.result?.success ? "MINED / VERIFIED" : "PRE-FLIGHT SIMULATION"}
+                {step.result?.success ? "MINED / VERIFIED" : "INSUFFICIENT BALANCE"}
               </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-muted-foreground">
@@ -1822,7 +1855,12 @@ function ToolCall({ step }: { step: Step }) {
               <div>Recipient: <strong className="text-foreground truncate">{step.result?.to}</strong></div>
               <div>Network: <strong className="text-foreground">{step.result?.network}</strong></div>
             </div>
-            {step.result?.hash && (
+            {step.result?.message && !step.result?.success && (
+              <p className="mt-2 text-destructive text-[11px] leading-relaxed">
+                {step.result.message}
+              </p>
+            )}
+            {step.result?.hash && step.result?.success && (
               <div className="mt-2 border-t border-border/40 pt-1.5 flex items-center justify-between">
                 <span className="text-foreground text-[10px] truncate">Tx: {step.result?.hash}</span>
                 {step.result?.explorerUrl && (
@@ -1830,7 +1868,7 @@ function ToolCall({ step }: { step: Step }) {
                     href={step.result?.explorerUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-primary underline text-[10px] shrink-0 inline-flex items-center gap-1"
+                    className="text-primary underline text-[10px] shrink-0 inline-flex items-center gap-1 font-bold"
                   >
                     BaseScan <ExternalLink className="size-3" />
                   </a>

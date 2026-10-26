@@ -34,7 +34,7 @@ export const REGISTERED_WORKFLOWS: WorkflowDefinition[] = [
     badge: "WEEK 3 ON-CHAIN PIPELINE",
     description:
       "Performs real on-chain bytecode verification on Base Sepolia, executes security audit, and publishes an immutable Proof-of-Audit attestation directly to the blockchain.",
-    totalCost: "0.03 USDC + Gas",
+    totalCost: "0.00003 ETH + Gas",
     defaultParams: {
       address: "0x940181a94A35A4569E4529A3CDfB74e48FD98631",
       auditTitle: "Aerodrome Finance Security Attestation",
@@ -51,8 +51,8 @@ export const REGISTERED_WORKFLOWS: WorkflowDefinition[] = [
         id: "step_2",
         name: "Automated Security Audit Scan",
         toolName: "audit_smart_contract",
-        description: "Analyze contract bytecode for honeypot vectors, mint functions, and blacklist flags (0.03 USDC x402).",
-        cost: "0.03 USDC",
+        description: "Analyze contract bytecode for honeypot vectors, mint functions, and blacklist flags (0.00003 ETH x402).",
+        cost: "0.00003 ETH",
         isPaid: true,
       },
       {
@@ -78,7 +78,7 @@ export const REGISTERED_WORKFLOWS: WorkflowDefinition[] = [
     badge: "INSTITUTIONAL PIPELINE",
     description:
       "Chains real-time DEX liquidity queries, bytecode vulnerability scanning, and autonomous x402 quantitative alpha to produce an institutional risk and investment dossier.",
-    totalCost: "0.05 USDC",
+    totalCost: "0.00005 ETH",
     defaultParams: {
       query: "AERO",
       address: "0x940181a94A35A4569E4529A3CDfB74e48FD98631",
@@ -97,15 +97,15 @@ export const REGISTERED_WORKFLOWS: WorkflowDefinition[] = [
         name: "Smart Contract Security Audit",
         toolName: "audit_smart_contract",
         description: "Run automated static bytecode audit for honeypot vectors, blacklist privileges, and liquidity locks.",
-        cost: "0.03 USDC",
+        cost: "0.00003 ETH",
         isPaid: true,
       },
       {
         id: "step_3",
         name: "Quantitative Alpha & Whale Netflow",
         toolName: "get_crypto_alpha",
-        description: "Autonomously pay 0.02 USDC via x402 for RSI-14, 50/200 EMA momentum, and whale cold-storage flows.",
-        cost: "0.02 USDC",
+        description: "Autonomously pay 0.00002 ETH via x402 for RSI-14, 50/200 EMA momentum, and whale cold-storage flows.",
+        cost: "0.00002 ETH",
         isPaid: true,
       },
       {
@@ -123,7 +123,7 @@ export const REGISTERED_WORKFLOWS: WorkflowDefinition[] = [
     badge: "CROSS-DOMAIN SCAN",
     description:
       "Synthesizes institutional sentiment, real-time crypto prices, and climate energy metrics to formulate cross-domain macroeconomic positioning.",
-    totalCost: "0.06 USDC",
+    totalCost: "0.00006 ETH",
     defaultParams: {
       assets: "bitcoin,ethereum,solana",
       miningCity: "Reykjavik",
@@ -133,8 +133,8 @@ export const REGISTERED_WORKFLOWS: WorkflowDefinition[] = [
         id: "step_1",
         name: "Macro Sentiment & Fear/Greed Index",
         toolName: "get_market_intel",
-        description: "Autonomously pay 0.05 USDC via x402 for global crypto sentiment, open interest, and narrative momentum.",
-        cost: "0.05 USDC",
+        description: "Autonomously pay 0.00005 ETH via x402 for global crypto sentiment, open interest, and narrative momentum.",
+        cost: "0.00005 ETH",
         isPaid: true,
       },
       {
@@ -148,8 +148,8 @@ export const REGISTERED_WORKFLOWS: WorkflowDefinition[] = [
         id: "step_3",
         name: "Mining Infrastructure Climate Metrics",
         toolName: "get_weather",
-        description: "Autonomously pay 0.01 USDC via x402 for temperature and cooling efficiency at key data center hubs.",
-        cost: "0.01 USDC",
+        description: "Autonomously pay 0.00001 ETH via x402 for temperature and cooling efficiency at key data center hubs.",
+        cost: "0.00001 ETH",
         isPaid: true,
       },
       {
@@ -167,7 +167,7 @@ export const REGISTERED_WORKFLOWS: WorkflowDefinition[] = [
     badge: "ON-CHAIN GOVERNANCE",
     description:
       "Queries live Base Sepolia RPC telemetry, assesses agent treasury reserves, and calculates operational compounding runway.",
-    totalCost: "0.00 USDC (FREE)",
+    totalCost: "0.0000 ETH (FREE)",
     defaultParams: {
       principal: 500,
       apyPercentage: 8.5,

@@ -102,9 +102,9 @@ export const tools: Tool[] = [
   {
     name: "get_market_intel",
     category: "x402-paid",
-    cost: "0.05 USDC",
+    cost: "0.00005 ETH",
     description:
-      "Get institutional global crypto market sentiment, Fear & Greed index, macro liquidity flows, and top trending narrative momentum. Costs 0.05 USDC, paid automatically from the agent's wallet via x402.",
+      "Get institutional global crypto market sentiment, Fear & Greed index, macro liquidity flows, and top trending narrative momentum. Costs 0.00005 Base Sepolia ETH, settled on-chain via the x402 protocol with verifiable BaseScan transaction receipt.",
     parameters: {
       type: "object",
       properties: {},
@@ -117,9 +117,9 @@ export const tools: Tool[] = [
   {
     name: "get_crypto_alpha",
     category: "x402-paid",
-    cost: "0.02 USDC",
+    cost: "0.00002 ETH",
     description:
-      "Get quantitative technical indicators (RSI-14, 50/200 EMA trend, MACD), whale netflow volume, and directional momentum conviction for any crypto asset (e.g. BTC, ETH, SOL). Costs 0.02 USDC, paid automatically via x402.",
+      "Get quantitative technical indicators (RSI-14, 50/200 EMA trend, MACD), whale netflow volume, and directional momentum conviction for any crypto asset (e.g. BTC, ETH, SOL). Costs 0.00002 Base Sepolia ETH, settled on-chain via x402 with verifiable BaseScan explorer link.",
     parameters: {
       type: "object",
       properties: {
@@ -138,9 +138,9 @@ export const tools: Tool[] = [
   {
     name: "audit_smart_contract",
     category: "x402-paid",
-    cost: "0.03 USDC",
+    cost: "0.00003 ETH",
     description:
-      "Run an automated security audit on a smart contract or token address. Checks for honeypots, mint functions, blacklist capabilities, and liquidity locking. Costs 0.03 USDC, paid automatically via x402.",
+      "Run an automated security audit on a smart contract or token address. Checks for honeypots, mint functions, blacklist capabilities, and liquidity locking. Costs 0.00003 Base Sepolia ETH, settled on-chain via x402 with verifiable BaseScan explorer link.",
     parameters: {
       type: "object",
       properties: {
@@ -159,9 +159,9 @@ export const tools: Tool[] = [
   {
     name: "get_weather",
     category: "x402-paid",
-    cost: "0.01 USDC",
+    cost: "0.00001 ETH",
     description:
-      "Get high-resolution meteorological weather metrics (temperature, humidity, wind, UV index) for any global city or mining hub. Costs 0.01 USDC, paid automatically from the agent's wallet.",
+      "Get high-resolution meteorological weather metrics (temperature, humidity, wind, UV index) for any global city or mining hub. Costs 0.00001 Base Sepolia ETH, paid and settled automatically from the agent's wallet via x402 on Base Sepolia.",
     parameters: {
       type: "object",
       properties: {

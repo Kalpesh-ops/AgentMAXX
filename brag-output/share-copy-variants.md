@@ -28,7 +28,7 @@ Repo: https://github.com/Kalpesh-ops/AgentMAXX
 ### 3. Discord / Telegram Hackathon Showcase
 ```text
 ⚡ **AgentMAXX v3.0 — Week 3: Give It A Wallet**
-We gave AgentMAXX an on-chain wallet on Base Sepolia (`0x596f6F8CcdfF7e01015AE57bb18670b41d1488BF`).
+We gave AgentMAXX an on-chain wallet on Base Sepolia (`0x0EF0F548cC9fC218D0cdfD7df24aC5B8Cb6be286`).
 
 Capabilities:
 1. Native ETH transfers on Base Sepolia

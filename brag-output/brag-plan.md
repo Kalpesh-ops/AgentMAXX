@@ -21,7 +21,7 @@
 ### Scene 2: Autonomous On-Chain Actions (4.5s – 9.5s)
 - **Duration:** 5.0s
 - **Headline:** *"Self-Funded. Autonomous On-Chain Agency."*
-- **Visual:** Dual-Wallet Web3 Hub appearing side-by-side: Agent Treasury (`0x596f6F8CcdfF7e01015AE57bb18670b41d1488BF`) and User Web3 Wallet. Live Base Sepolia gas meter (`0.0060 Gwei`, `41ms latency`). Simulated on-chain transfer button pulsing green.
+- **Visual:** Dual-Wallet Web3 Hub appearing side-by-side: Agent Treasury (`0x0EF0F548cC9fC218D0cdfD7df24aC5B8Cb6be286`) and User Web3 Wallet. Live Base Sepolia gas meter (`0.0060 Gwei`, `41ms latency`). Simulated on-chain transfer button pulsing green.
 - **SFX:** `drop_001.ogg` at 4.7s, `select_008.ogg` at 7.0s.
 
 ### Scene 3: Proof-of-Audit & Bytecode Inspection (9.5s – 15.0s)

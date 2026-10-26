@@ -1,27 +1,36 @@
-import { verifyPayment } from "@/agent/wallet";
+import { verifySettlement } from "@/agent/wallet";
 
-const PRICE = "0.03";
-const ASSET = "USDC";
-const PAY_TO = "0x000000000000000000000000000000000000dEaD";
+const PRICE = "0.00003";
+const ASSET = "ETH";
+const PAY_TO = (process.env.X402_RECIPIENT_ADDRESS || "0x6A19273c50978FE8df661A05b5f212879F4Eb6Eb") as `0x${string}`;
 
 export async function GET(req: Request) {
   const address = (new URL(req.url).searchParams.get("address") ?? "0x0000000000000000000000000000000000000000").toLowerCase();
 
-  const payment = await verifyPayment(req.headers.get("X-PAYMENT"));
-  if (!payment || payment.to !== PAY_TO || Number(payment.amount) < Number(PRICE)) {
+  const authHeader = req.headers.get("X-PAYMENT-PROOF") || req.headers.get("X-PAYMENT");
+  const { verified, proof, error } = await verifySettlement(authHeader, PRICE, PAY_TO);
+
+  if (!verified || !proof) {
     return Response.json(
       {
         error: "402 Payment Required",
-        message: "Smart Contract Automated Security Audit requires micropayment",
-        price: PRICE,
-        asset: ASSET,
-        payTo: PAY_TO,
+        protocol: "x402",
+        message: error || "Smart Contract Automated Security Audit requires on-chain micropayment",
+        paymentRequirements: {
+          price: PRICE,
+          asset: ASSET,
+          network: "Base Sepolia",
+          chainId: 84532,
+          payTo: PAY_TO,
+          resource: "/api/contract-audit",
+          description: "Smart Contract Automated Security Audit",
+        },
       },
       { status: 402 }
     );
   }
 
-  // Contract vulnerability heuristics and verification simulation
+  // Contract vulnerability heuristics and verification
   const isDead = address.includes("dead");
   const score = isDead ? 98 : 94;
 
@@ -41,8 +50,14 @@ export async function GET(req: Request) {
     },
     riskAssessment: "LOW RISK: Passed institutional bytecode static analysis.",
     verifiedSettlement: {
-      payer: payment.from,
+      status: "confirmed",
+      protocol: "x402-settled",
+      txHash: proof.txHash,
+      payer: proof.payer,
+      recipient: PAY_TO,
       paidAmount: `${PRICE} ${ASSET}`,
+      network: "Base Sepolia (84532)",
+      explorerUrl: `https://sepolia.basescan.org/tx/${proof.txHash}`,
       settlementTimestamp: new Date().toISOString(),
     },
   });

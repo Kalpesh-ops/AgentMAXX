@@ -1,133 +1,246 @@
-# AgentMAXX ⚡
-### Autonomous On-Chain Web3 Agent, Base Sepolia Wallet Engine & x402 Micropayments
-> **Built for Rise In Agentmaxxing — Week 3: "Give It A Wallet"**  
-> *(Evolved from Week 1 Prototype $\rightarrow$ Week 2 Workflow Engine $\rightarrow$ Week 3 Full Crypto-Enabled Autonomous Agent)*
+# ⚡ AgentMAXX
+
+```text
+ █████╗  ██████╗ ███████╗███╗   ██╗████████╗███╗   ███╗ █████╗ ██╗  ██╗██╗  ██╗
+██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝████╗ ████║██╔══██╗╚██╗██╔╝╚██╗██╔╝
+███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║   ██╔████╔██║███████║ ╚███╔╝  ╚███╔╝ 
+██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║   ██║╚██╔╝██║██╔══██║ ██╔██╗  ██╔██╗ 
+██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║   ██║ ╚═╝ ██║██║  ██║██╔╝ ██╗██╔╝ ██╗
+╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝   ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
+              AUTONOMOUS WEB3 AI AGENT • X402 ON-CHAIN SETTLEMENTS
+```
+
+> **Built for Rise In Agentmaxxing — 3-Week Journey (Week 1 $\rightarrow$ Week 2 $\rightarrow$ Week 3)**  
+> *Autonomous Multi-Tool Agent with Embedded Base Sepolia Wallet & On-Chain X402 Micropayment Settlement Engine.*
 
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel)](https://agent-maxx.vercel.app)
-[![Network](https://img.shields.io/badge/Network-Base%20Sepolia%20(Chain%20ID%2084532)-blue?style=for-the-badge&logo=coinbase)](https://sepolia.basescan.org)
+[![Network](https://img.shields.io/badge/Network-Base%20Sepolia%20(84532)-blue?style=for-the-badge&logo=coinbase)](https://sepolia.basescan.org)
 [![LLM](https://img.shields.io/badge/Model-Google%20Gemini%203.8%20Flash-orange?style=for-the-badge&logo=google)](https://aistudio.google.com)
-[![Crypto Engine](https://img.shields.io/badge/Crypto%20Engine-viem%20v2%20+%20BaseScan-purple?style=for-the-badge)](https://sepolia.basescan.org)
-[![Protocol](https://img.shields.io/badge/Payments-x402%20EIP--191%20Settlements-green?style=for-the-badge)](https://agent-maxx.vercel.app)
+[![Protocol](https://img.shields.io/badge/Payments-X402%20On--Chain%20Settlement-green?style=for-the-badge)](https://x402.org)
+[![Explorer](https://img.shields.io/badge/Explorer-BaseScan%20Sepolia-purple?style=for-the-badge)](https://sepolia.basescan.org)
 [![Launch Video](https://img.shields.io/badge/Video-Launch%20Demo%20(brag.mp4)-red?style=for-the-badge&logo=youtube)](https://agent-maxx.vercel.app/brag.mp4)
 
-> 🎬 **20-Second Launch Video**: [Watch `brag.mp4`](https://agent-maxx.vercel.app/brag.mp4) | [Poster](https://agent-maxx.vercel.app/brag.jpg)  
-> *(Produced with [`latent-spaces/brag`](https://github.com/latent-spaces/brag) + Hyperframes & GSAP)*
+---
+
+## 📌 Project Description: What Problem is AgentMAXX Solving?
+
+Traditional AI agents are **passive text generators locked out of the global digital economy**. When an AI agent needs to access premium real-time data feeds, institutional quantitative alpha, or specialized compute APIs, it is stopped dead by Web2 paywalls that require:
+1. Manual human account registration,
+2. Credit card approvals with monthly recurring subscriptions,
+3. Fragile API keys exposed to security breaches.
+
+Furthermore, when AI agents produce high-value intelligence (such as smart contract security audits), their findings are stored in ephemeral databases with **no cryptographic proof, timestamping, or on-chain accountability**.
+
+### The AgentMAXX Solution:
+AgentMAXX transforms the AI agent into an **autonomous economic actor**:
+- **X402 Protocol Integration**: Operates machine-to-machine payments using HTTP `402 Payment Required`. When encountering a monetized resource, the agent's embedded wallet signs and broadcasts an **actual on-chain transaction** on Base Sepolia, obtains the mined block receipt, and provides cryptographic proof to unlock the API.
+- **On-Chain Audit Attestation**: Serializes executive findings into raw Ethereum calldata, permanently notarizing proof-of-audit reports on Base Sepolia.
+- **Dual-Wallet Architecture**: Bridges user Web3 wallets (MetaMask, Coinbase) and the autonomous agent treasury, allowing seamless 1-click funding while preserving the agent's independent agency.
 
 ---
 
-## 💸 What&apos;s New in Week 3: "Give It A Wallet"
+## 🛠️ Tech Stack & Dependencies
 
-In Week 1 and 2, we built an AI agent capable of multi-stage workflows, live DEX telemetry, and machine-to-machine x402 signatures.
+| Technology | Version | Purpose |
+| :--- | :--- | :--- |
+| **Next.js** | `v16.3.6` (App Router) | High-performance fullstack framework & API routes |
+| **React** | `v19.3.0` | Modern reactive UI components |
+| **TypeScript** | `v5.9.3` | End-to-end type safety & contract schemas |
+| **viem** | `v2.56.9` | Low-level EVM wallet client, transaction broadcasting & RPC engine |
+| **@google/genai** | `v2.24.0` | Official Google Gemini GenAI SDK for autonomous function calling |
+| **Tailwind CSS** | `v4.3.3` | Responsive glassmorphic cyber-terminal styling |
+| **Lucide React** | `v1.48.0` | Clean iconography |
+| **Network** | Base Sepolia (`84532`) | Fast, low-fee Ethereum Layer 2 testnet |
+| **Explorer** | BaseScan Sepolia | Independent on-chain transaction verification |
 
-In **Week 3: Give It A Wallet**, we brought in the **on-chain crypto layer**. AgentMAXX is now an autonomous crypto agent with real wallet capabilities on **Base Sepolia (Chain ID: 84532)**:
+---
+
+## 🤖 Supported AI Models & Versioning
+
+AgentMAXX supports Google's newest multimodal reasoning models, configured via `GEMINI_MODEL`:
+
+1. **Google Gemini 3.8 Flash** (`gemini-3.8-flash`) — *Default Flagship*
+   - Ultra-fast reasoning and autonomous tool calling latency.
+   - Handles multi-turn function call loops and complex on-chain transaction orchestration.
+2. **Google Gemini 2.5 Flash** (`gemini-2.5-flash`) — *Fallback / Compatible*
+   - Supported for standard tool calling and high-volume batch processing.
+
+*Model Switching*: Configured via the `GEMINI_MODEL` environment variable in `.env`.
+
+---
+
+## 🧰 Complete Arsenal of Agent Tools
+
+AgentMAXX equips Gemini with 12 typed capabilities across three categories:
+
+### 1. X402 On-Chain Micropayment Tools (Week 3 Feature)
+| Tool Name | Cost | Description | On-Chain Verification |
+| :--- | :--- | :--- | :--- |
+| `get_crypto_alpha` | `0.00002 ETH` | Fetches quantitative technical indicators (RSI-14, 50/200 EMA, MACD) and whale flows. | Base Sepolia on-chain tx with BaseScan link |
+| `get_market_intel` | `0.00005 ETH` | Institutional crypto sentiment, Fear & Greed index, and narrative momentum. | Base Sepolia on-chain tx with BaseScan link |
+| `audit_smart_contract`| `0.00003 ETH` | Automated static bytecode audit for honeypots, mint functions, and liquidity locks. | Base Sepolia on-chain tx with BaseScan link |
+| `get_weather` | `0.00001 ETH` | High-resolution satellite climate metrics for mining data center efficiency. | Base Sepolia on-chain tx with BaseScan link |
+
+### 2. On-Chain Base Sepolia Actions (Week 3 Feature)
+| Tool Name | Cost | Description |
+| :--- | :--- | :--- |
+| `send_onchain_payment` | Gas + Amount | Executes native ETH transfer from the agent's wallet to any 0x recipient on Base Sepolia. Returns live BaseScan explorer link. |
+| `publish_audit_attestation`| Gas only | Serializes audit findings into raw hex calldata and broadcasts an immutable on-chain Proof-of-Audit transaction. |
+| `verify_contract_onchain` | Free | Queries Base Sepolia node to inspect deployed bytecode, contract byte size, balance, and EOA vs Smart Contract status. |
+
+### 3. Real-Time Market & Utility Tools
+| Tool Name | Cost | Description |
+| :--- | :--- | :--- |
+| `search_dex_pairs` | Free | Queries live spot liquidity, pool depth, 24h volume, and FDV via DexScreener. |
+| `get_crypto_prices` | Free | Real-time spot prices and 24h percentage changes for benchmark crypto assets. |
+| `get_chain_telemetry` | Free | Live Base Sepolia RPC metrics: block height, gas price in Gwei, and node latency. |
+| `get_my_wallet` | Free | Reports agent treasury address, live ETH balance, and BaseScan explorer URL. |
+| `calculate_tokenomics` | Free | Staking yield, compounding APY, and runway calculations. |
+
+---
+
+## ⚡ Key Features & How X402 On-Chain Settlement Works
+
+### 1. True X402 On-Chain Payment Protocol Flow
+Unlike naive templates that merely sign an off-chain text message without transferring any value, AgentMAXX implements **actual on-chain settlement on Base Sepolia**:
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   AGENTMAXX v3.0 CRYPTO ARCHITECTURE                   │
-├────────────────────────────────────────────────────────────────────────┤
-│                                                                        │
-│   [ User / Web3 Wallet ] ◄─── Dual-Wallet Hub ───► [ Agent Wallet ]    │
-│   (MetaMask / Coinbase)                              (Base Sepolia)    │
-│            │                                                │          │
-│            ▼                                                ▼          │
-│   ┌──────────────────────────────────────────────────────────────┐     │
-│   │           COGNITIVE ENGINE & ON-CHAIN CONTROLLER             │     │
-│   │             (Google Gemini 3.8 Flash + viem v2)              │     │
-│   └──────────────────────┬───────────────────────┬───────────────┘     │
-│                          │                       │                     │
-│       On-Chain Action Router                     │                     │
-│       ┌──────────────────┴──────────────────┐    │                     │
-│       ▼                                     ▼    ▼                     │
-│   [Live ETH Transfers]            [Calldata Notarization]              │
-│   - Direct Base Sepolia tx        - Encodes audit reports              │
-│   - Validates balance & gas       - Broadcasts to Base Sepolia ledger  │
-│   - Returns live BaseScan link    - Permanent on-chain proof           │
-│       │                                     │                          │
-│       └──────────────────┬──────────────────┘                          │
-│                          ▼                                             │
-│   ┌──────────────────────────────────────────────────────────────┐     │
-│   │          ON-CHAIN VERIFICATION & M2M PAYMENT SUITE           │     │
-│   │  • Smart Contract Bytecode Inspection (Honeypot detection)   │     │
-│   │  • EIP-191 Micropayment Handshakes (x402 Protocol)           │     │
-│   │  • Live Base Sepolia RPC Telemetry (Block, Gas in Gwei)      │     │
-│   └──────────────────────────────────────────────────────────────┘     │
-└────────────────────────────────────────────────────────────────────────┘
+[AgentMAXX Client]                [Resource Endpoint / Provider]
+        │                                       │
+        │─── 1. GET /api/crypto-alpha ─────────►│
+        │                                       │
+        │◄── 2. HTTP 402 Payment Required ──────│
+        │       { price: "0.00002 ETH",         │
+        │         payTo: "0x6A19...",           │
+        │         network: "Base Sepolia" }     │
+        │                                       │
+  [Agent Wallet signs & broadcasts              │
+   tx on Base Sepolia, waits for receipt]       │
+        │                                       │
+        │─── 3. GET with X-PAYMENT-PROOF ──────►│
+        │       { txHash: "0xabc...",           │
+        │         payer: "0x0EF...",            │
+        │         amount: "0.00002 ETH" }       │
+        │                                       │
+        │                        [Endpoint verifies tx & receipt
+        │                         directly on Base Sepolia node]
+        │                                       │
+        │◄── 4. HTTP 200 OK + Data ─────────────│
+        │       { verifiedSettlement: {         │
+        │           txHash: "0xabc...",         │
+        │           explorerUrl: "https://..."  │
+        │       }}                              │
 ```
 
----
+1. **Challenge (402)**: Protected API routes return HTTP 402 with structured `paymentRequirements` (recipient address, price in ETH, chainId `84532`).
+2. **Autonomous Execution**: The agent's wallet client initiates an on-chain transfer to the recipient address on Base Sepolia.
+3. **Mining & Confirmation**: The agent waits for the transaction receipt mined on Base Sepolia.
+4. **Settlement Proof**: The agent attaches `X-PAYMENT-PROOF` (containing `txHash`, payer, recipient, amount) in the HTTP headers.
+5. **On-Chain Verification**: The API endpoint queries Base Sepolia RPC (`chain.getTransactionReceipt` and `chain.getTransaction`), verifies the value transferred, matches the recipient, and ensures replay protection.
+6. **Delivery & Explorer Display**: The response includes verified settlement data, and the UI provides a direct clickable link to **BaseScan Sepolia**.
 
-## ⚡ Core Crypto Capabilities (Week 3 Requirements)
+### 2. Dual-Wallet Web3 Hub
+- **User Wallet**: Connect MetaMask, Coinbase Wallet, or Rainbow using standard Web3 EIP-1193 provider.
+- **Agent Treasury**: Autonomous Viem keypair on Base Sepolia with persistent, secure environment variable backing.
+- **1-Click Funding**: Transfer test ETH from browser wallet directly into the agent's treasury.
 
-### 1. 💳 Dual-Wallet Architecture (User + Agent)
-- **Agent Dedicated Wallet**: The agent owns an on-chain keypair initialized on **Base Sepolia** (`viem` PrivateKeyAccount), capable of signing transactions, holding ETH/tokens, paying for services, and broadcasting calldata.
-- **User Web3 Connection**: Users can connect their own browser wallet (MetaMask, Coinbase Wallet, Rainbow) via standard `window.ethereum` RPC (`eth_requestAccounts`) and switch seamlessly to Base Sepolia (Chain ID: `0x14a34` / `84532`).
-- **1-Click Funding**: Users can fund the agent's autonomous wallet directly with test ETH via Web3 transfer from within the UI.
-
-### 2. 💸 Autonomous On-Chain ETH Transfers (`sendOnChainPayment`)
-- AgentMAXX can initiate real on-chain native ETH transactions on Base Sepolia.
-- Validates recipient checksum addresses, evaluates live gas prices from the Base Sepolia RPC, and submits the transaction with cryptographic receipts.
-- Direct live links to [BaseScan Sepolia](https://sepolia.basescan.org) for instant verification.
-
-### 3. 📜 On-Chain Calldata Notarization (`publishOnChainAttestation`)
-- **Where Crypto Actually Makes Sense for AI Agents**: Rather than storing audit logs off-chain, AgentMAXX serializes its security findings, token evaluations, or verification proofs into raw hex calldata (`0x...`) and broadcasts an on-chain transaction to Base Sepolia.
-- The transaction permanently etches the AI audit digest into Ethereum state, creating tamper-proof, timestamped, immutable **Proof-of-Audit**.
-
-### 4. 🔍 Live Smart Contract Bytecode Verification (`verifyContractBytecode`)
-- Connects to Base Sepolia RPC via `publicClient.getBytecode({ address })`.
-- Inspects target contract bytecode on-chain, measures exact byte size, detects self-destruct opcodes (`0xff`), owner-only balance drains, or verifies whether an address is an EOA or a deployed smart contract.
-
-### 5. 🤖 Week 3 Workflow: On-Chain Audit & Notarization Pipeline
-- **Stage 1**: Query live DEX liquidity and price metrics via DexScreener.
-- **Stage 2**: Inspect target smart contract bytecode live on Base Sepolia.
-- **Stage 3**: Settle 0.02 USDC via x402 EIP-191 micropayment for off-chain quantitative signals.
-- **Stage 4**: Synthesize executive audit findings with Gemini 3.8 Flash.
-- **Stage 5**: **Broadcast immutable Proof-of-Audit calldata transaction** to Base Sepolia, returning the notarized hash!
+### 3. Immutable On-Chain Calldata Attestation
+- Rather than leaving audit trails in private logs, AgentMAXX encodes audit findings into UTF-8 $\rightarrow$ Hex calldata and broadcasts it directly to Base Sepolia, creating a permanent, tamper-proof record.
 
 ---
 
-## 🎬 Judge Walkthrough & Demo Guide (Under 90 Seconds)
+## 🔍 On-Chain Transaction Verification Guide
 
-Experience all Week 3 crypto capabilities live right now:
+Every on-chain action executed by AgentMAXX displays the transaction hash and a direct BaseScan link:
 
-1. **Visit Live App**: [https://agent-maxx.vercel.app/](https://agent-maxx.vercel.app/)
-2. **Explore Tab 03 — "Crypto & On-Chain Hub"**:
-   - Inspect the **Agent On-Chain Wallet** address on Base Sepolia.
-   - Click **"Connect User Wallet"** to pair your MetaMask/browser wallet and see your address and balance side-by-side.
-   - Click **"Test Transfer"** or enter any Base Sepolia address to see the agent execute an on-chain ETH transfer.
-   - Click **"Publish Proof-of-Audit"** to see the agent serialize an audit digest into UTF-8 $\rightarrow$ Hex calldata and broadcast the transaction.
-   - Enter any contract address (e.g. AERO, BRETT, or the agent address) and click **"Inspect Bytecode"** to verify on-chain deployment.
-3. **Explore Tab 02 — "Agentic Workflows"**:
-   - Select **"⛓️ On-Chain Audit & Notarization Pipeline"**.
-   - Click **"Launch Autonomous Workflow"**.
-   - Watch the 5-stage pipeline execute, ending with an on-chain notarization receipt on Base Sepolia.
-4. **Explore Tab 01 — "Executive Console"**:
-   - Ask the agent: *"Send 0.0001 ETH to 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on Base Sepolia"* or *"Notarize an audit for Brett on Base Sepolia"*.
-   - Watch Gemini 3.8 Flash autonomously invoke the corresponding crypto tool and return real on-chain transaction metadata.
+1. **Agent Wallet on BaseScan**:
+   `https://sepolia.basescan.org/address/{AGENT_WALLET_ADDRESS}`
+2. **Sample Transaction Link**:
+   `https://sepolia.basescan.org/tx/{TRANSACTION_HASH}`
+3. **How to Verify**:
+   - In the AgentMAXX UI, open the **Tool Execution Log** or **Crypto Hub**.
+   - Click the **"BaseScan"** link next to the confirmed transaction.
+   - BaseScan will confirm:
+     - **Status**: `Success`
+     - **Block**: Current Base Sepolia block height
+     - **From**: Agent Wallet
+     - **To**: Recipient / Attestation target
+     - **Value**: Amount of ETH transferred
 
 ---
 
-## 🏆 Week 3 Hackathon Submission Details
+## 🔗 Demo Links & Submissions
 
-- **Challenge**: Rise In Agentmaxxing — Week 3: Give It A Wallet
-- **Submission Deadline**: October 23
-- **Live Production App**: [https://agent-maxx.vercel.app/](https://agent-maxx.vercel.app/)
-- **GitHub Repository**: [https://github.com/Kalpesh-ops/AgentMAXX](https://github.com/Kalpesh-ops/AgentMAXX)
-- **Target Network**: Base Sepolia Testnet (Chain ID: 84532)
+| Week | Submission | Link |
+| :--- | :--- | :--- |
+| **Week 1** (`agentmaxx.v1`) | Interactive Autonomous Agent Prototype | [https://agent-maxx.vercel.app](https://agent-maxx.vercel.app) |
+| **Week 2** (`agentmaxx.v2`) | Multi-Stage Agentic Workflow Engine | [https://agent-maxx.vercel.app](https://agent-maxx.vercel.app) |
+| **Week 3** (`agentmaxx.v3`) | Full X402 On-Chain Settlement & Wallet Engine | [https://agent-maxx.vercel.app](https://agent-maxx.vercel.app) |
+
+### 🎬 Demo Video
+- **Launch Demo Video**: [Watch `brag.mp4`](https://agent-maxx.vercel.app/brag.mp4)
+- **Demo Walkthrough**: Available directly in the **"Demo & Guide"** tab of the live application.
+
+---
+
+## 🚀 Setup & Local Installation
+
+### Prerequisites
+- Node.js 18+
+- Base Sepolia testnet ETH from [Chainlink Faucet](https://faucets.chain.link/base-sepolia) or [Alchemy Base Sepolia Faucet](https://alchemy.com/faucets/base-sepolia).
+
+### 1. Clone & Install
+```bash
+git clone https://github.com/Kalpesh-ops/AgentMAXX.git
+cd AgentMAXX
+npm install
+```
+
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env`:
+```bash
+cp .env.example .env
+```
+Populate `.env`:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-3.8-flash
+
+# Provide your Base Sepolia wallet private key (0x...)
+WALLET_PRIVATE_KEY=0x_your_private_key_here
+
+# (Optional) RPC URL
+BASE_SEPOLIA_RPC=https://sepolia.base.org
+```
+
+> **Security Note**: Never commit `.env` or any private key to source control. Both `.env` and `.agent-wallet.json` are strictly gitignored.
+
+### 3. Run Locally
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🔮 Future Scope
+
+- **Multi-Chain X402 Routing**: Expand on-chain settlement to Base Mainnet, Arbitrum, Optimism, and Solana.
+- **EIP-7702 Account Abstraction**: Upgrade the agent's wallet with session keys and programmable spending limits.
+- **Decentralized Agent Marketplace**: Enable peer-to-peer x402 payment discovery where multiple AI agents can hire and pay each other on-chain.
+- **Streaming Micropayments**: Integrate Superfluid / Sablier for continuous token streaming per second of compute.
+
+---
+
+## 🌐 Social Media & Community
+
 - **Developer**: Kalpesh Parashar
-
-### Key Week 3 Learnings & Crypto Reflection
-> *"Giving an AI agent a crypto wallet fundamentally changes its nature: it transforms from an advice-generator into an autonomous economic actor. By equipping AgentMAXX with a dedicated Base Sepolia wallet using viem, the agent can hold capital, execute native transactions, and notarize its intelligence directly into the blockchain ledger. We also discovered where crypto makes the most sense for agents: immutable audit proofs via calldata notarization, machine-to-machine x402 micropayments where credit cards are impossible, and verifiable smart contract bytecode inspection before capital allocation."*
-
----
-
-## 🛠️ Tech Stack
-- **Framework**: Next.js 16 (App Router), TypeScript, Tailwind CSS, Lucide Icons
-- **Blockchain**: Base Sepolia (Chain ID: 84532), `viem` v2, BaseScan API
-- **AI Engine**: Google Gemini 3.8 Flash (`@google/genai`)
-- **Micropayments**: HTTP 402 Payment Required + EIP-191 Personal Signatures
-- **Hosting**: Vercel Serverless Edge
+- **GitHub**: [@Kalpesh-ops](https://github.com/Kalpesh-ops)
+- **Rise In Community**: [@riseinweb3](https://x.com/riseinweb3)
+- **Project Repository**: [https://github.com/Kalpesh-ops/AgentMAXX](https://github.com/Kalpesh-ops/AgentMAXX)
 
 ---
 
 ## 📜 License
+
 MIT License. Open source for the Rise In Agentmaxxing Community.

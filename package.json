@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify-wallet": "node scripts/fund-check-and-transfer.js"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
