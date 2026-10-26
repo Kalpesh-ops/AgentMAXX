@@ -152,7 +152,7 @@ const PRESET_PROMPTS = [
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"chat" | "workflows" | "crypto" | "demo">("chat");
   const [persona, setPersona] = useState<"executive" | "alpha-hunter" | "security-auditor">("executive");
-  const [selectedModel, setSelectedModel] = useState<string>("gemini-2.5-flash");
+  const [selectedModel, setSelectedModel] = useState<string>("gemini-3-flash-preview");
   const [customModel, setCustomModel] = useState("");
   const [showCustomModelInput, setShowCustomModelInput] = useState(false);
   const [status, setStatus] = useState<Status | null>(null);
