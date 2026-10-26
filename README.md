@@ -151,21 +151,24 @@ Unlike naive templates that merely sign an off-chain text message without transf
 
 ## 🔍 On-Chain Transaction Verification Guide
 
-Every on-chain action executed by AgentMAXX displays the transaction hash and a direct BaseScan link:
+Every on-chain action executed by AgentMAXX displays the transaction hash and a direct BaseScan link. Here are the live verified on-chain transactions executed by AgentMAXX on Base Sepolia:
 
-1. **Agent Wallet on BaseScan**:
-   `https://sepolia.basescan.org/address/{AGENT_WALLET_ADDRESS}`
-2. **Sample Transaction Link**:
-   `https://sepolia.basescan.org/tx/{TRANSACTION_HASH}`
-3. **How to Verify**:
-   - In the AgentMAXX UI, open the **Tool Execution Log** or **Crypto Hub**.
-   - Click the **"BaseScan"** link next to the confirmed transaction.
-   - BaseScan will confirm:
-     - **Status**: `Success`
-     - **Block**: Current Base Sepolia block height
-     - **From**: Agent Wallet
-     - **To**: Recipient / Attestation target
-     - **Value**: Amount of ETH transferred
+1. **Agent Dedicated Wallet on BaseScan**:  
+   [https://sepolia.basescan.org/address/0x0EF0F548cC9fC218D0cdfD7df24aC5B8Cb6be286](https://sepolia.basescan.org/address/0x0EF0F548cC9fC218D0cdfD7df24aC5B8Cb6be286)
+   - **Balance**: `0.4499 ETH` (Funded & Active)
+   - **Network**: Base Sepolia (Chain ID: `84532`)
+
+2. **Verified Live ETH Transfer**:  
+   [https://sepolia.basescan.org/tx/0x8dcba649378286d023b2e29722d5fdbc3526bcd17cc063f37aa264b72566092e](https://sepolia.basescan.org/tx/0x8dcba649378286d023b2e29722d5fdbc3526bcd17cc063f37aa264b72566092e)
+   - **Block**: `50659480`
+   - **From**: `0x0EF0F548cC9fC218D0cdfD7df24aC5B8Cb6be286`
+   - **Status**: `Success` (Confirmed on-chain)
+
+3. **Verified Live Proof-of-Audit Attestation**:  
+   [https://sepolia.basescan.org/tx/0x276785d3ab55ba168182dfee58ec6cdc27a0df9ccf4d71c0421bcaaf6bd89ceb](https://sepolia.basescan.org/tx/0x276785d3ab55ba168182dfee58ec6cdc27a0df9ccf4d71c0421bcaaf6bd89ceb)
+   - **Block**: `50659613`
+   - **Action**: Direct UTF-8 $\rightarrow$ Calldata Notarization on Base Sepolia
+   - **Status**: `Success` (Confirmed on-chain)
 
 ---
 
