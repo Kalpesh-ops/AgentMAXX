@@ -48,6 +48,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { parseAgentError, type ParsedError } from "@/agent/errors";
+import { SUPPORTED_MODELS } from "@/agent/models";
 
 type Step = { tool: string; args: unknown; result: any; error?: boolean };
 type Message = {
@@ -151,6 +152,9 @@ const PRESET_PROMPTS = [
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"chat" | "workflows" | "crypto" | "demo">("chat");
   const [persona, setPersona] = useState<"executive" | "alpha-hunter" | "security-auditor">("executive");
+  const [selectedModel, setSelectedModel] = useState<string>("gemini-2.5-flash");
+  const [customModel, setCustomModel] = useState("");
+  const [showCustomModelInput, setShowCustomModelInput] = useState(false);
   const [status, setStatus] = useState<Status | null>(null);
   const [wallet, setWallet] = useState<WalletInfo | null>(null);
   const [telemetry, setTelemetry] = useState<Telemetry | null>(null);
@@ -163,6 +167,18 @@ export default function Home() {
   const [showSubmissionModal, setShowSubmissionModal] = useState(false);
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [privateKey, setPrivateKey] = useState<string | null>(null);
+
+  function changeModel(m: string) {
+    if (m === "custom") {
+      setShowCustomModelInput(true);
+      return;
+    }
+    setShowCustomModelInput(false);
+    setSelectedModel(m);
+    try {
+      localStorage.setItem("agentmaxx_model", m);
+    } catch {}
+  }
 
   // WEEK 3: Web3 User Browser Wallet Connection State
   const [userAddress, setUserAddress] = useState<string | null>(null);
@@ -220,7 +236,17 @@ export default function Home() {
   useEffect(() => {
     fetch("/api/agent")
       .then((r) => r.json())
-      .then(setStatus)
+      .then((data) => {
+        setStatus(data);
+        try {
+          const saved = localStorage.getItem("agentmaxx_model");
+          if (saved) {
+            setSelectedModel(saved);
+          } else if (data?.model) {
+            setSelectedModel(data.model);
+          }
+        } catch {}
+      })
       .catch(() => {});
     loadWallet();
     loadTelemetry();
@@ -401,6 +427,7 @@ export default function Home() {
         body: JSON.stringify({
           messages: history.filter((m) => !m.error).map(({ role, text }) => ({ role, text })),
           persona,
+          model: selectedModel,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -449,6 +476,7 @@ export default function Home() {
         body: JSON.stringify({
           workflowId: selectedWorkflow,
           params: workflowParams,
+          model: selectedModel,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -556,43 +584,93 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Persona Selector */}
-          <div className="flex flex-col gap-1.5 border-l-2 border-primary pl-4 font-mono text-xs">
-            <span className="text-muted-foreground uppercase text-[10px] font-bold">Active Agent Persona:</span>
-            <div className="flex gap-1.5">
-              <button
-                onClick={() => setPersona("executive")}
-                className={cn(
-                  "border px-2.5 py-1 text-xs transition-colors font-medium",
-                  persona === "executive"
-                    ? "border-primary bg-primary text-primary-foreground font-bold"
-                    : "border-border bg-background text-muted-foreground hover:text-foreground"
+          {/* Controls: Persona & Model Selectors */}
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Persona Selector */}
+            <div className="flex flex-col gap-1.5 border-l-2 border-primary pl-3 font-mono text-xs">
+              <span className="text-muted-foreground uppercase text-[10px] font-bold">Active Agent Persona:</span>
+              <div className="flex gap-1.5">
+                <button
+                  onClick={() => setPersona("executive")}
+                  className={cn(
+                    "border px-2.5 py-1 text-xs transition-colors font-medium",
+                    persona === "executive"
+                      ? "border-primary bg-primary text-primary-foreground font-bold"
+                      : "border-border bg-background text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Executive 💼
+                </button>
+                <button
+                  onClick={() => setPersona("alpha-hunter")}
+                  className={cn(
+                    "border px-2.5 py-1 text-xs transition-colors font-medium",
+                    persona === "alpha-hunter"
+                      ? "border-primary bg-primary text-primary-foreground font-bold"
+                      : "border-border bg-background text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Alpha Hunter ⚡
+                </button>
+                <button
+                  onClick={() => setPersona("security-auditor")}
+                  className={cn(
+                    "border px-2.5 py-1 text-xs transition-colors font-medium",
+                    persona === "security-auditor"
+                      ? "border-primary bg-primary text-primary-foreground font-bold"
+                      : "border-border bg-background text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Auditor 🛡️
+                </button>
+              </div>
+            </div>
+
+            {/* Gemini Model Selector */}
+            <div className="flex flex-col gap-1.5 border-l-2 border-primary/50 pl-3 font-mono text-xs">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-muted-foreground uppercase text-[10px] font-bold flex items-center gap-1">
+                  <Cpu className="size-3 text-primary" /> Gemini Model:
+                </span>
+                <span className="text-[10px] font-bold text-primary bg-primary/10 border border-primary/30 px-1.5 py-0.2">
+                  {SUPPORTED_MODELS.find((m) => m.id === selectedModel)?.badge || "ACTIVE"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <select
+                  value={showCustomModelInput ? "custom" : selectedModel}
+                  onChange={(e) => changeModel(e.target.value)}
+                  className="bg-background border border-border px-2.5 py-1 text-xs text-foreground font-mono focus:border-primary focus:outline-none cursor-pointer max-w-[220px]"
+                >
+                  {SUPPORTED_MODELS.map((m) => (
+                    <option key={m.id} value={m.id}>
+                      {m.label} ({m.badge})
+                    </option>
+                  ))}
+                  <option value="custom">⚙️ Custom Model Name...</option>
+                </select>
+                {showCustomModelInput && (
+                  <div className="flex items-center gap-1">
+                    <Input
+                      placeholder="e.g. gemini-3.0-flash"
+                      value={customModel}
+                      onChange={(e) => setCustomModel(e.target.value)}
+                      className="h-7 w-36 font-mono text-xs"
+                    />
+                    <Button
+                      size="sm"
+                      className="h-7 px-2 font-mono text-xs uppercase"
+                      onClick={() => {
+                        if (customModel.trim()) {
+                          changeModel(customModel.trim());
+                        }
+                      }}
+                    >
+                      Set
+                    </Button>
+                  </div>
                 )}
-              >
-                Executive 💼
-              </button>
-              <button
-                onClick={() => setPersona("alpha-hunter")}
-                className={cn(
-                  "border px-2.5 py-1 text-xs transition-colors font-medium",
-                  persona === "alpha-hunter"
-                    ? "border-primary bg-primary text-primary-foreground font-bold"
-                    : "border-border bg-background text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Alpha Hunter ⚡
-              </button>
-              <button
-                onClick={() => setPersona("security-auditor")}
-                className={cn(
-                  "border px-2.5 py-1 text-xs transition-colors font-medium",
-                  persona === "security-auditor"
-                    ? "border-primary bg-primary text-primary-foreground font-bold"
-                    : "border-border bg-background text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Auditor 🛡️
-              </button>
+              </div>
             </div>
           </div>
         </div>
@@ -656,8 +734,8 @@ export default function Home() {
                 <SectionTitle num="01" title="Agent Treasury & Node" />
               </CardHeader>
               <CardContent className="flex flex-col pt-4">
-                <SetupStep number={1} title={`Gemini 3.8 Flash (${persona.toUpperCase()})`} done={ready}>
-                  {ready && <p className="text-xs text-muted-foreground">Active with on-chain execution loop.</p>}
+                <SetupStep number={1} title={`Gemini: ${selectedModel} (${persona.toUpperCase()})`} done={ready}>
+                  {ready && <p className="text-xs text-muted-foreground">Engine: <strong className="text-foreground">{selectedModel}</strong> with cognitive on-chain loop.</p>}
                   {!ready && <p className="text-xs text-muted-foreground">Configure GEMINI_API_KEY to start.</p>}
                 </SetupStep>
 
@@ -815,6 +893,8 @@ export default function Home() {
                         {m.error ? (
                           <FormattedErrorCard
                             error={m.errorDetails || parseAgentError(m.text)}
+                            selectedModel={selectedModel}
+                            onSelectModel={changeModel}
                             onRetry={() => {
                               const lastUserMsg = [...messages.slice(0, i)].reverse().find((msg) => msg.role === "user");
                               if (lastUserMsg) send(lastUserMsg.text);
@@ -1022,6 +1102,8 @@ export default function Home() {
                   {workflowResult.error ? (
                     <FormattedErrorCard
                       error={workflowResult.errorDetails || parseAgentError(workflowResult.error)}
+                      selectedModel={selectedModel}
+                      onSelectModel={changeModel}
                       onRetry={runSelectedWorkflow}
                     />
                   ) : (
@@ -1817,9 +1899,13 @@ function WalletDetails({
 function FormattedErrorCard({
   error,
   onRetry,
+  selectedModel,
+  onSelectModel,
 }: {
   error: ParsedError;
   onRetry?: () => void;
+  selectedModel?: string;
+  onSelectModel?: (m: string) => void;
 }) {
   return (
     <div className="border border-destructive/40 bg-destructive/5 p-4 font-mono text-xs shadow-sm">
@@ -1868,6 +1954,35 @@ function FormattedErrorCard({
           </p>
         </div>
       </div>
+
+      {/* Quick Model Switcher */}
+      {onSelectModel && (
+        <div className="mt-3.5 pt-3 border-t border-destructive/20">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] text-muted-foreground uppercase font-bold flex items-center gap-1">
+              <Cpu className="size-3 text-primary" /> If this model is unavailable, switch engine:
+            </span>
+            {selectedModel && (
+              <span className="text-[10px] text-muted-foreground">Current: {selectedModel}</span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {SUPPORTED_MODELS.filter((m) => m.id !== selectedModel).slice(0, 5).map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => {
+                  onSelectModel(m.id);
+                  if (onRetry) setTimeout(onRetry, 150);
+                }}
+                className="border border-border/80 bg-background hover:border-primary hover:text-primary px-2.5 py-1 text-[11px] font-mono transition-colors flex items-center gap-1 text-foreground"
+              >
+                <Cpu className="size-3 text-primary" /> Switch to {m.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Footer / Retry Action */}
       {onRetry && (

@@ -11,21 +11,21 @@ import { GoogleGenAI, type Content, type Part } from "@google/genai";
 import { tools } from "./tools";
 
 import { parseAgentError } from "./errors";
+import { SUPPORTED_MODELS, DEFAULT_MODEL } from "./models";
 
 const rawModel = process.env.GEMINI_MODEL?.trim();
 // Default to the stable, fast gemini-2.5-flash
-export const MODEL = rawModel || "gemini-2.5-flash";
-const FALLBACK_MODEL = "gemini-2.5-flash";
-const MAX_STEPS = 6;
+export const MODEL = rawModel || DEFAULT_MODEL;
+export { SUPPORTED_MODELS };
 
-/** Helper to execute Gemini calls with automatic transient retry and fallback */
+/** Helper to execute Gemini calls with automatic transient retry */
 async function callGeminiWithRetry(
   ai: GoogleGenAI,
   req: { model: string; contents: Content[]; config: any },
   retries = 2
 ) {
   let lastError: any = null;
-  let targetModel = req.model;
+  const targetModel = req.model;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -36,12 +36,6 @@ async function callGeminiWithRetry(
     } catch (err: any) {
       lastError = err;
       const parsed = parseAgentError(err);
-      
-      // If 503 or 404 and target is not already the fallback model, switch immediately
-      if ((parsed.code === 503 || parsed.code === 404) && targetModel !== FALLBACK_MODEL) {
-        targetModel = FALLBACK_MODEL;
-        continue;
-      }
 
       // If it's a 503 spike, wait and retry
       if (parsed.code === 503 && attempt < retries) {
@@ -49,7 +43,6 @@ async function callGeminiWithRetry(
         continue;
       }
 
-      // Otherwise break and throw parsed error
       break;
     }
   }
@@ -85,7 +78,7 @@ export type Step = { tool: string; args: unknown; result: unknown; error?: boole
 
 export async function runAgent(
   history: ChatMessage[],
-  ctx: { baseUrl: string; persona?: PersonaMode }
+  ctx: { baseUrl: string; persona?: PersonaMode; model?: string }
 ) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -94,6 +87,7 @@ export async function runAgent(
 
   const personaKey: PersonaMode = ctx.persona && PERSONA_PROMPTS[ctx.persona] ? ctx.persona : "executive";
   const systemInstruction = PERSONA_PROMPTS[personaKey];
+  const chosenModel = ctx.model?.trim() || MODEL;
 
   const ai = new GoogleGenAI({ apiKey });
   const contents: Content[] = history.map((m) => ({
@@ -104,7 +98,7 @@ export async function runAgent(
 
   for (let i = 0; i < MAX_STEPS; i++) {
     const response = await callGeminiWithRetry(ai, {
-      model: MODEL,
+      model: chosenModel,
       contents,
       config: {
         systemInstruction,

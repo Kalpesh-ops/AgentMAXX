@@ -11,14 +11,14 @@ export async function GET() {
 // POST /api/workflow { workflowId, params } -> Execute multi-stage autonomous workflow
 export async function POST(req: Request) {
   try {
-    const { workflowId, params = {} } = await req.json();
+    const { workflowId, params = {}, model } = await req.json();
 
     if (!workflowId) {
       return Response.json({ error: "Missing workflowId parameter." }, { status: 400 });
     }
 
     const baseUrl = new URL(req.url).origin;
-    const result = await executeWorkflow(workflowId, params, { baseUrl });
+    const result = await executeWorkflow(workflowId, params, { baseUrl, model });
 
     return Response.json(result);
   } catch (err) {

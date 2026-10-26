@@ -230,7 +230,7 @@ export type WorkflowExecutionResult = {
 export async function executeWorkflow(
   workflowId: string,
   userParams: Record<string, any>,
-  ctx: { baseUrl: string; apiKey?: string }
+  ctx: { baseUrl: string; apiKey?: string; model?: string }
 ): Promise<WorkflowExecutionResult> {
   const workflow = REGISTERED_WORKFLOWS.find((w) => w.id === workflowId);
   if (!workflow) {
@@ -359,9 +359,10 @@ Keep the tone authoritative, quantitative, sharp, and professional.
 `;
 
   let finalDossier = "";
+  const targetModel = ctx.model?.trim() || MODEL;
   try {
     const synthesisResponse = await ai.models.generateContent({
-      model: MODEL,
+      model: targetModel,
       contents: [{ role: "user", parts: [{ text: synthesisPrompt }] }],
     });
     finalDossier = synthesisResponse.text || "Workflow completed successfully.";

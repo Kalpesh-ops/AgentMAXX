@@ -1,12 +1,13 @@
-import { MODEL, runAgent, type PersonaMode } from "@/agent/agent";
+import { MODEL, SUPPORTED_MODELS, runAgent, type PersonaMode } from "@/agent/agent";
 import { parseAgentError } from "@/agent/errors";
 import { tools } from "@/agent/tools";
 
-// GET /api/agent -> setup status + enriched list of tools
+// GET /api/agent -> setup status + enriched list of tools + supported models
 export async function GET() {
   return Response.json({
     hasApiKey: Boolean(process.env.GEMINI_API_KEY),
     model: MODEL,
+    supportedModels: SUPPORTED_MODELS,
     tools: tools.map((t) => ({
       name: t.name,
       description: t.description,
@@ -16,7 +17,7 @@ export async function GET() {
   });
 }
 
-// POST /api/agent { messages, persona } -> the agent's answer + execution step trace
+// POST /api/agent { messages, persona, model } -> the agent's answer + execution step trace
 export async function POST(req: Request) {
   if (!process.env.GEMINI_API_KEY) {
     return Response.json(
@@ -26,10 +27,11 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { messages, persona } = await req.json();
+    const { messages, persona, model } = await req.json();
     const result = await runAgent(messages, {
       baseUrl: new URL(req.url).origin,
       persona: persona as PersonaMode,
+      model,
     });
     return Response.json(result);
   } catch (err) {
