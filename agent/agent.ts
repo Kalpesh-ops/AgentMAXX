@@ -10,9 +10,52 @@
 import { GoogleGenAI, type Content, type Part } from "@google/genai";
 import { tools } from "./tools";
 
-const rawModel = process.env.GEMINI_MODEL;
-export const MODEL = (!rawModel || rawModel === "gemini-2.5-flash") ? "gemini-3.8-flash" : rawModel;
+import { parseAgentError } from "./errors";
+
+const rawModel = process.env.GEMINI_MODEL?.trim();
+// Default to the stable, fast gemini-2.5-flash
+export const MODEL = rawModel || "gemini-2.5-flash";
+const FALLBACK_MODEL = "gemini-2.5-flash";
 const MAX_STEPS = 6;
+
+/** Helper to execute Gemini calls with automatic transient retry and fallback */
+async function callGeminiWithRetry(
+  ai: GoogleGenAI,
+  req: { model: string; contents: Content[]; config: any },
+  retries = 2
+) {
+  let lastError: any = null;
+  let targetModel = req.model;
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await ai.models.generateContent({
+        ...req,
+        model: targetModel,
+      });
+    } catch (err: any) {
+      lastError = err;
+      const parsed = parseAgentError(err);
+      
+      // If 503 or 404 and target is not already the fallback model, switch immediately
+      if ((parsed.code === 503 || parsed.code === 404) && targetModel !== FALLBACK_MODEL) {
+        targetModel = FALLBACK_MODEL;
+        continue;
+      }
+
+      // If it's a 503 spike, wait and retry
+      if (parsed.code === 503 && attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, (attempt + 1) * 1200));
+        continue;
+      }
+
+      // Otherwise break and throw parsed error
+      break;
+    }
+  }
+
+  throw lastError;
+}
 
 export type PersonaMode = "executive" | "alpha-hunter" | "security-auditor";
 
@@ -60,7 +103,7 @@ export async function runAgent(
   const steps: Step[] = [];
 
   for (let i = 0; i < MAX_STEPS; i++) {
-    const response = await ai.models.generateContent({
+    const response = await callGeminiWithRetry(ai, {
       model: MODEL,
       contents,
       config: {

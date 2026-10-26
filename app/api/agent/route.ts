@@ -1,4 +1,5 @@
 import { MODEL, runAgent, type PersonaMode } from "@/agent/agent";
+import { parseAgentError } from "@/agent/errors";
 import { tools } from "@/agent/tools";
 
 // GET /api/agent -> setup status + enriched list of tools
@@ -32,9 +33,14 @@ export async function POST(req: Request) {
     });
     return Response.json(result);
   } catch (err) {
+    const parsed = parseAgentError(err);
+    const statusNum = typeof parsed.code === "number" ? parsed.code : 500;
     return Response.json(
-      { error: err instanceof Error ? err.message : String(err) },
-      { status: 500 }
+      {
+        error: parsed.details || parsed.reason,
+        errorDetails: parsed,
+      },
+      { status: statusNum >= 400 && statusNum < 600 ? statusNum : 500 }
     );
   }
 }

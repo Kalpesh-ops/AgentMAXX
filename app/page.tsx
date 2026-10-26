@@ -47,9 +47,16 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { parseAgentError, type ParsedError } from "@/agent/errors";
 
 type Step = { tool: string; args: unknown; result: any; error?: boolean };
-type Message = { role: "user" | "agent"; text: string; steps?: Step[]; error?: boolean };
+type Message = {
+  role: "user" | "agent";
+  text: string;
+  steps?: Step[];
+  error?: boolean;
+  errorDetails?: ParsedError;
+};
 type ToolInfo = { name: string; description: string; category?: string; cost?: string };
 type Status = { hasApiKey: boolean; model: string; tools: ToolInfo[] };
 type WalletInfo = {
@@ -396,21 +403,34 @@ export default function Home() {
           persona,
         }),
       });
-      const data = await res.json();
-      setMessages((m) => [
-        ...m,
-        data.error
-          ? { role: "agent", text: data.error, error: true }
-          : { role: "agent", text: data.answer, steps: data.steps },
-      ]);
-      if (data.steps?.some((s: Step) => s.result?.payment || s.tool === "send_onchain_payment")) loadWallet();
-    } catch {
+      const data = await res.json().catch(() => ({}));
+      if (data.error || !res.ok) {
+        const errorDetails = data.errorDetails || parseAgentError(data.error || `HTTP ${res.status}`);
+        setMessages((m) => [
+          ...m,
+          {
+            role: "agent",
+            text: errorDetails.details || data.error || "Execution error",
+            error: true,
+            errorDetails,
+          },
+        ]);
+      } else {
+        setMessages((m) => [
+          ...m,
+          { role: "agent", text: data.answer, steps: data.steps },
+        ]);
+        if (data.steps?.some((s: Step) => s.result?.payment || s.tool === "send_onchain_payment")) loadWallet();
+      }
+    } catch (err: any) {
+      const errorDetails = parseAgentError(err);
       setMessages((m) => [
         ...m,
         {
           role: "agent",
-          text: "Could not reach the server. Please check your connection.",
+          text: errorDetails.details || "Could not reach the server. Please check your connection.",
           error: true,
+          errorDetails,
         },
       ]);
     }
@@ -431,11 +451,17 @@ export default function Home() {
           params: workflowParams,
         }),
       });
-      const data = await res.json();
-      setWorkflowResult(data);
-      loadWallet();
-    } catch (err) {
-      setWorkflowResult({ error: "Failed to execute workflow." });
+      const data = await res.json().catch(() => ({}));
+      if (data.error || !res.ok) {
+        const errorDetails = data.errorDetails || parseAgentError(data.error || `HTTP ${res.status}`);
+        setWorkflowResult({ error: data.error || errorDetails.details, errorDetails });
+      } else {
+        setWorkflowResult(data);
+        loadWallet();
+      }
+    } catch (err: any) {
+      const errorDetails = parseAgentError(err);
+      setWorkflowResult({ error: errorDetails.details || "Failed to execute workflow.", errorDetails });
     }
     setWorkflowRunning(false);
   }
@@ -786,22 +812,19 @@ export default function Home() {
                         {m.steps?.map((s, j) => (
                           <ToolCall key={j} step={s} />
                         ))}
-                        <div
-                          className={cn(
-                            "border p-4 text-xs leading-relaxed",
-                            m.error
-                              ? "border-destructive/40 bg-destructive/10 text-destructive"
-                              : "border-border bg-muted/40 text-foreground"
-                          )}
-                        >
-                          {m.error && (
-                            <div className="flex items-center gap-2 mb-2 font-mono font-bold text-destructive">
-                              <CircleAlert className="size-4 shrink-0" />
-                              <span>Execution Error</span>
-                            </div>
-                          )}
-                          <MarkdownText content={m.text} />
-                        </div>
+                        {m.error ? (
+                          <FormattedErrorCard
+                            error={m.errorDetails || parseAgentError(m.text)}
+                            onRetry={() => {
+                              const lastUserMsg = [...messages.slice(0, i)].reverse().find((msg) => msg.role === "user");
+                              if (lastUserMsg) send(lastUserMsg.text);
+                            }}
+                          />
+                        ) : (
+                          <div className="border border-border bg-muted/40 p-4 text-xs leading-relaxed text-foreground">
+                            <MarkdownText content={m.text} />
+                          </div>
+                        )}
                       </div>
                     </div>
                   )
@@ -996,94 +1019,103 @@ export default function Home() {
 
               {workflowResult && (
                 <div className="flex flex-col gap-6">
-                  {/* Summary Bar */}
-                  <div className="flex flex-wrap items-center justify-between border border-primary/40 bg-primary/10 p-4 font-mono text-xs">
-                    <div>
-                      <span className="text-muted-foreground">STATUS:</span>{" "}
-                      <strong className="text-primary">EXECUTION COMPLETE (SUCCESS)</strong>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">DURATION:</span>{" "}
-                      <strong className="text-foreground">{workflowResult.totalDurationMs} ms</strong>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">x402 SETTLED:</span>{" "}
-                      <strong className="text-foreground">{workflowResult.totalCostSettled}</strong>
-                    </div>
-                  </div>
+                  {workflowResult.error ? (
+                    <FormattedErrorCard
+                      error={workflowResult.errorDetails || parseAgentError(workflowResult.error)}
+                      onRetry={runSelectedWorkflow}
+                    />
+                  ) : (
+                    <>
+                      {/* Summary Bar */}
+                      <div className="flex flex-wrap items-center justify-between border border-primary/40 bg-primary/10 p-4 font-mono text-xs">
+                        <div>
+                          <span className="text-muted-foreground">STATUS:</span>{" "}
+                          <strong className="text-primary">EXECUTION COMPLETE (SUCCESS)</strong>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">DURATION:</span>{" "}
+                          <strong className="text-foreground">{workflowResult.totalDurationMs} ms</strong>
+                        </div>
+                        <div>
+                          <span className="text-muted-foreground">x402 SETTLED:</span>{" "}
+                          <strong className="text-foreground">{workflowResult.totalCostSettled}</strong>
+                        </div>
+                      </div>
 
-                  {/* Stage-by-stage results */}
-                  <div className="flex flex-col gap-3">
-                    <h4 className="font-mono text-xs font-bold uppercase text-primary">Stage Execution Log</h4>
-                    {workflowResult.stepResults?.map((sr: any, idx: number) => (
-                      <Collapsible key={idx} className="border border-border font-mono text-xs bg-muted/20">
-                        <CollapsibleTrigger className="flex w-full items-center justify-between px-3 py-2.5 hover:bg-muted/60 text-left">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="size-3.5 text-primary" />
-                            <span className="text-muted-foreground">Stage {idx + 1}:</span>
-                            <span className="font-bold text-foreground">{sr.name}</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            {sr.payment && (
-                              <Badge className="bg-blue font-mono text-[10px] text-foreground">
-                                Paid {sr.payment.amount}
-                              </Badge>
-                            )}
-                            <span className="text-[11px] text-muted-foreground">{sr.durationMs}ms</span>
-                            <ChevronRight className="size-3 text-muted-foreground" />
-                          </div>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="border-t border-border p-3 bg-background">
-                          {sr.payment && (
-                            <div className="mb-2 border border-blue/40 bg-blue/10 p-2 text-[11px]">
-                              <div className="flex items-center justify-between mb-1">
-                                <p className="font-bold text-primary">x402 On-Chain Settlement Receipt</p>
-                                <span className="text-[10px] bg-primary/20 px-1 py-0.5 text-primary font-bold">
-                                  {sr.payment.txHash ? "MINED ON-CHAIN" : "VERIFIED"}
-                                </span>
+                      {/* Stage-by-stage results */}
+                      <div className="flex flex-col gap-3">
+                        <h4 className="font-mono text-xs font-bold uppercase text-primary">Stage Execution Log</h4>
+                        {workflowResult.stepResults?.map((sr: any, idx: number) => (
+                          <Collapsible key={idx} className="border border-border font-mono text-xs bg-muted/20">
+                            <CollapsibleTrigger className="flex w-full items-center justify-between px-3 py-2.5 hover:bg-muted/60 text-left">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle2 className="size-3.5 text-primary" />
+                                <span className="text-muted-foreground">Stage {idx + 1}:</span>
+                                <span className="font-bold text-foreground">{sr.name}</span>
                               </div>
-                              <p className="text-muted-foreground">Amount: <strong className="text-foreground">{sr.payment.amount}</strong></p>
-                              <p className="text-muted-foreground truncate">Recipient: <strong className="text-foreground">{sr.payment.to}</strong></p>
-                              {sr.payment.txHash && (
-                                <div className="mt-1.5 pt-1.5 border-t border-border/40 flex items-center justify-between">
-                                  <span className="text-foreground text-[10px] truncate">Tx: {sr.payment.txHash}</span>
-                                  {sr.payment.explorerUrl && (
-                                    <a
-                                      href={sr.payment.explorerUrl}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="text-primary underline ml-2 shrink-0 inline-flex items-center gap-1 font-bold"
-                                    >
-                                      BaseScan <ExternalLink className="size-3" />
-                                    </a>
+                              <div className="flex items-center gap-3">
+                                {sr.payment && (
+                                  <Badge className="bg-blue font-mono text-[10px] text-foreground">
+                                    Paid {sr.payment.amount}
+                                  </Badge>
+                                )}
+                                <span className="text-[11px] text-muted-foreground">{sr.durationMs}ms</span>
+                                <ChevronRight className="size-3 text-muted-foreground" />
+                              </div>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="border-t border-border p-3 bg-background">
+                              {sr.payment && (
+                                <div className="mb-2 border border-blue/40 bg-blue/10 p-2 text-[11px]">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <p className="font-bold text-primary">x402 On-Chain Settlement Receipt</p>
+                                    <span className="text-[10px] bg-primary/20 px-1 py-0.5 text-primary font-bold">
+                                      {sr.payment.txHash ? "MINED ON-CHAIN" : "VERIFIED"}
+                                    </span>
+                                  </div>
+                                  <p className="text-muted-foreground">Amount: <strong className="text-foreground">{sr.payment.amount}</strong></p>
+                                  <p className="text-muted-foreground truncate">Recipient: <strong className="text-foreground">{sr.payment.to}</strong></p>
+                                  {sr.payment.txHash && (
+                                    <div className="mt-1.5 pt-1.5 border-t border-border/40 flex items-center justify-between">
+                                      <span className="text-foreground text-[10px] truncate">Tx: {sr.payment.txHash}</span>
+                                      {sr.payment.explorerUrl && (
+                                        <a
+                                          href={sr.payment.explorerUrl}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="text-primary underline ml-2 shrink-0 inline-flex items-center gap-1 font-bold"
+                                        >
+                                          BaseScan <ExternalLink className="size-3" />
+                                        </a>
+                                      )}
+                                    </div>
                                   )}
                                 </div>
                               )}
-                            </div>
-                          )}
-                          <pre className="max-h-48 overflow-x-auto bg-muted/40 p-2 text-[11px] text-foreground">
-                            {JSON.stringify(sr.result, null, 2)}
-                          </pre>
-                        </CollapsibleContent>
-                      </Collapsible>
-                    ))}
-                  </div>
+                              <pre className="max-h-48 overflow-x-auto bg-muted/40 p-2 text-[11px] text-foreground">
+                                {JSON.stringify(sr.result, null, 2)}
+                              </pre>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        ))}
+                      </div>
 
-                  {/* Final Dossier */}
-                  <div className="border border-border bg-muted/30 p-5">
-                    <div className="flex items-center justify-between border-b border-border/80 pb-3 mb-3">
-                      <h4 className="font-bold text-base uppercase text-primary">Executive Due Diligence Dossier</h4>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="font-mono text-xs uppercase"
-                        onClick={() => navigator.clipboard.writeText(workflowResult.finalDossier)}
-                      >
-                        <Copy className="size-3 mr-1" /> Copy Dossier
-                      </Button>
-                    </div>
-                    <MarkdownText content={workflowResult.finalDossier} />
-                  </div>
+                      {/* Final Dossier */}
+                      <div className="border border-border bg-muted/30 p-5">
+                        <div className="flex items-center justify-between border-b border-border/80 pb-3 mb-3">
+                          <h4 className="font-bold text-base uppercase text-primary">Executive Due Diligence Dossier</h4>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="font-mono text-xs uppercase"
+                            onClick={() => navigator.clipboard.writeText(workflowResult.finalDossier)}
+                          >
+                            <Copy className="size-3 mr-1" /> Copy Dossier
+                          </Button>
+                        </div>
+                        <MarkdownText content={workflowResult.finalDossier} />
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </ScrollArea>
@@ -1778,6 +1810,81 @@ function WalletDetails({
           Export Key <Key className="size-3" />
         </button>
       </div>
+    </div>
+  );
+}
+
+function FormattedErrorCard({
+  error,
+  onRetry,
+}: {
+  error: ParsedError;
+  onRetry?: () => void;
+}) {
+  return (
+    <div className="border border-destructive/40 bg-destructive/5 p-4 font-mono text-xs shadow-sm">
+      {/* Header bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-destructive/30 pb-2.5 mb-3">
+        <div className="flex items-center gap-2 text-destructive font-bold text-xs sm:text-sm">
+          <CircleAlert className="size-4 shrink-0" />
+          <span>{error.title || "Execution Error"}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Badge variant="destructive" className="font-mono text-[10px] font-bold uppercase">
+            STATUS {error.code}
+          </Badge>
+          <Badge variant="outline" className="font-mono text-[10px] text-muted-foreground border-border uppercase">
+            {error.status}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Structured 3-part layout: Why it occurred, Technical Details, Recommended Action */}
+      <div className="space-y-3">
+        <div className="bg-destructive/10 border border-destructive/20 p-2.5">
+          <span className="text-destructive font-bold text-[11px] block uppercase tracking-wider mb-1">
+            Why this occurred:
+          </span>
+          <p className="text-foreground/90 font-sans font-medium text-xs leading-relaxed">
+            {error.reason}
+          </p>
+        </div>
+
+        <div>
+          <span className="text-muted-foreground text-[10px] block uppercase font-bold mb-1">
+            Upstream Error Message:
+          </span>
+          <p className="bg-background border border-border p-2.5 text-[11px] text-foreground leading-relaxed break-words font-mono select-text">
+            {error.details}
+          </p>
+        </div>
+
+        <div>
+          <span className="text-muted-foreground text-[10px] block uppercase font-bold mb-1">
+            Recommended Action:
+          </span>
+          <p className="text-muted-foreground font-sans text-xs leading-relaxed">
+            {error.suggestion}
+          </p>
+        </div>
+      </div>
+
+      {/* Footer / Retry Action */}
+      {onRetry && (
+        <div className="mt-3.5 pt-2.5 border-t border-destructive/20 flex flex-wrap items-center justify-between gap-2">
+          <span className="text-[10px] text-muted-foreground">
+            Spikes in AI model traffic and network delays are usually transient.
+          </span>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onRetry}
+            className="border-destructive/40 text-destructive hover:bg-destructive/10 text-xs font-mono uppercase h-7 px-3"
+          >
+            <RotateCcw className="size-3 mr-1.5" /> Retry Request
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

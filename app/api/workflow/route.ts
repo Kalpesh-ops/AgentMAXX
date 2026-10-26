@@ -1,3 +1,4 @@
+import { parseAgentError } from "@/agent/errors";
 import { executeWorkflow, REGISTERED_WORKFLOWS } from "@/agent/workflows";
 
 // GET /api/workflow -> List available multi-stage workflows
@@ -21,9 +22,14 @@ export async function POST(req: Request) {
 
     return Response.json(result);
   } catch (err) {
+    const parsed = parseAgentError(err);
+    const statusNum = typeof parsed.code === "number" ? parsed.code : 500;
     return Response.json(
-      { error: err instanceof Error ? err.message : String(err) },
-      { status: 500 }
+      {
+        error: parsed.details || parsed.reason,
+        errorDetails: parsed,
+      },
+      { status: statusNum >= 400 && statusNum < 600 ? statusNum : 500 }
     );
   }
 }
